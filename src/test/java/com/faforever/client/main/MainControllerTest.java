@@ -10,7 +10,7 @@ import com.faforever.client.game.GamePathHandler;
 import com.faforever.client.game.GameService;
 import com.faforever.client.i18n.I18n;
 import com.faforever.client.leaderboard.LeaderboardRating;
-import com.faforever.client.leaderboard.LeaderboardRatingBuilder;
+import com.faforever.client.leaderboard.LeaderboardRatingMapBuilder;
 import com.faforever.client.login.LoginController;
 import com.faforever.client.main.event.NavigateEvent;
 import com.faforever.client.main.event.NavigationItem;

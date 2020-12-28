@@ -1,10 +1,8 @@
 package com.faforever.client.chat;
 
-import com.faforever.client.fa.RatingMode;
 import com.faforever.client.game.GameBuilder;
 import com.faforever.client.i18n.I18n;
-import com.faforever.client.leaderboard.LeaderboardRating;
-import com.faforever.client.leaderboard.LeaderboardRatingBuilder;
+import com.faforever.client.leaderboard.LeaderboardRatingMapBuilder;
 import com.faforever.client.player.Player;
 import com.faforever.client.player.PlayerBuilder;
 import com.faforever.client.remote.domain.GameStatus;
@@ -12,8 +10,6 @@ import com.faforever.client.test.AbstractPlainJavaFxTest;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
-
-import java.util.Map;
 
 import static com.faforever.client.game.PlayerStatus.HOSTING;
 import static com.faforever.client.game.PlayerStatus.IDLE;
@@ -69,9 +65,7 @@ public class UserFilterControllerTest extends AbstractPlainJavaFxTest {
 
   @Test
   public void testIsBoundedByRatingWithinBounds() {
-    LeaderboardRating leaderboardRating = LeaderboardRatingBuilder.create().defaultValues().get();
-    Map<String, LeaderboardRating> leaderboardRatingMap = Map.of(RatingMode.GLOBAL.getRatingType(), leaderboardRating);
-    player.setLeaderboardRatings(leaderboardRatingMap);
+    player.setLeaderboardRatings(LeaderboardRatingMapBuilder.create().defaultValues().get());
 
     instance.minRatingFilterField.setText("-100");
     instance.maxRatingFilterField.setText("100");
@@ -81,9 +75,7 @@ public class UserFilterControllerTest extends AbstractPlainJavaFxTest {
 
   @Test
   public void testIsBoundedByRatingNotWithinBounds() {
-    LeaderboardRating leaderboardRating = LeaderboardRatingBuilder.create().defaultValues().get();
-    Map<String, LeaderboardRating> leaderboardRatingMap = Map.of(RatingMode.GLOBAL.getRatingType(), leaderboardRating);
-    player.setLeaderboardRatings(leaderboardRatingMap);
+    player.setLeaderboardRatings(LeaderboardRatingMapBuilder.create().defaultValues().get());
 
     instance.minRatingFilterField.setText("300");
     instance.maxRatingFilterField.setText("600");
