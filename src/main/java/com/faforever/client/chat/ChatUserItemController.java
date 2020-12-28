@@ -40,9 +40,6 @@ import org.springframework.stereotype.Component;
 
 import java.lang.ref.WeakReference;
 
-import static com.faforever.client.util.RatingUtil.getGlobalRating;
-import static com.faforever.client.util.RatingUtil.getLeaderboardRating;
-
 @Component
 @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 @Slf4j
@@ -270,8 +267,7 @@ public class ChatUserItemController implements Controller<Node> {
   }
 
   private void updateNameLabelText(Player player) {
-    userTooltip.setText(String.format("%s\n%s",
-        i18n.get("userInfo.ratingFormat", getGlobalRating(player), getLeaderboardRating(player)),
+    userTooltip.setText(String.format("%s",
         i18n.get("userInfo.idleTimeFormat", timeService.timeAgo(chatUser.getLastActive()))));
   }
 

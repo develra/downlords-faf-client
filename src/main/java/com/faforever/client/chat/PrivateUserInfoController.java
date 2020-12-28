@@ -10,7 +10,6 @@ import com.faforever.client.game.GameDetailController;
 import com.faforever.client.i18n.I18n;
 import com.faforever.client.player.Player;
 import com.faforever.client.util.IdenticonUtil;
-import com.faforever.client.util.RatingUtil;
 import com.google.common.eventbus.EventBus;
 import javafx.application.Platform;
 import javafx.beans.InvalidationListener;
@@ -55,9 +54,7 @@ public class PrivateUserInfoController implements Controller<Node> {
   public Label unlockedAchievementsLabelLabel;
 
   @SuppressWarnings("FieldCanBeLocal")
-  private InvalidationListener globalRatingInvalidationListener;
-  @SuppressWarnings("FieldCanBeLocal")
-  private InvalidationListener leaderboardRatingInvalidationListener;
+  private InvalidationListener ratingInvalidationListener;
   @SuppressWarnings("FieldCanBeLocal")
   private InvalidationListener gameInvalidationListener;
 
@@ -134,15 +131,8 @@ public class PrivateUserInfoController implements Controller<Node> {
     userImageView.setImage(IdenticonUtil.createIdenticon(player.getId()));
     userImageView.setVisible(true);
 
-    globalRatingInvalidationListener = (observable) -> loadReceiverGlobalRatingInformation(player);
-    JavaFxUtil.addListener(player.globalRatingMeanProperty(), new WeakInvalidationListener(globalRatingInvalidationListener));
-    JavaFxUtil.addListener(player.globalRatingDeviationProperty(), new WeakInvalidationListener(globalRatingInvalidationListener));
-    loadReceiverGlobalRatingInformation(player);
-
-    leaderboardRatingInvalidationListener = (observable) -> loadReceiverLadderRatingInformation(player);
-    JavaFxUtil.addListener(player.leaderboardRatingMeanProperty(), new WeakInvalidationListener(leaderboardRatingInvalidationListener));
-    JavaFxUtil.addListener(player.leaderboardRatingDeviationProperty(), new WeakInvalidationListener(leaderboardRatingInvalidationListener));
-    loadReceiverLadderRatingInformation(player);
+    ratingInvalidationListener = (observable) -> loadReceiverRatingInformation(player);
+    JavaFxUtil.addListener(player.leaderboardRatingMapProperty(), new WeakInvalidationListener(ratingInvalidationListener));
 
     gameInvalidationListener = observable -> onPlayerGameChanged(player.getGame());
     JavaFxUtil.addListener(player.gameProperty(), new WeakInvalidationListener(gameInvalidationListener));
@@ -179,13 +169,8 @@ public class PrivateUserInfoController implements Controller<Node> {
     gameDetailWrapper.setVisible(newGame != null);
   }
 
-  private void loadReceiverGlobalRatingInformation(Player player) {
-    Platform.runLater(() -> globalRatingLabel.setText(i18n.get("chat.privateMessage.ratingFormat",
-        RatingUtil.getRating(player.getGlobalRatingMean(), player.getGlobalRatingDeviation()))));
-  }
-
-  private void loadReceiverLadderRatingInformation(Player player) {
-    Platform.runLater(() -> leaderboardRatingLabel.setText(i18n.get("chat.privateMessage.ratingFormat",
-        RatingUtil.getRating(player.getLeaderboardRatingMean(), player.getLeaderboardRatingDeviation()))));
+  private void loadReceiverRatingInformation(Player player) {
+    //TODO load rating information
   }
 }
+

@@ -23,9 +23,9 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.Mockito.when;
 
-public class LeaderboardControllerTest extends AbstractPlainJavaFxTest {
+public class LeaderboardsControllerTest extends AbstractPlainJavaFxTest {
 
-  private LeaderboardController instance;
+  private LeaderboardsController instance;
 
   @Mock
   private LeaderboardService leaderboardService;
@@ -38,9 +38,9 @@ public class LeaderboardControllerTest extends AbstractPlainJavaFxTest {
 
   @Before
   public void setUp() throws Exception {
-    instance = new LeaderboardController(leaderboardService, notificationService, i18n, reportingService);
+    instance = new LeaderboardsController(leaderboardService, notificationService, i18n, reportingService);
 
-    loadFxml("theme/leaderboard/leaderboard.fxml", clazz -> instance);
+    loadFxml("theme/leaderboard/leaderboards.fxml", clazz -> instance);
   }
 
   @Test

@@ -6,6 +6,7 @@ import com.faforever.client.chat.event.UnreadPartyMessageEvent;
 import com.faforever.client.chat.event.UnreadPrivateMessageEvent;
 import com.faforever.client.config.ClientProperties;
 import com.faforever.client.discord.JoinDiscordEvent;
+import com.faforever.client.fa.RatingMode;
 import com.faforever.client.fx.AbstractViewController;
 import com.faforever.client.fx.Controller;
 import com.faforever.client.fx.JavaFxUtil;

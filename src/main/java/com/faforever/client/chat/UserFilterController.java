@@ -4,13 +4,10 @@ import com.faforever.client.fx.Controller;
 import com.faforever.client.game.PlayerStatus;
 import com.faforever.client.i18n.I18n;
 import com.faforever.client.player.Player;
-import com.faforever.client.util.ProgrammingError;
-import com.faforever.client.util.RatingUtil;
 import com.google.common.annotations.VisibleForTesting;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.scene.Node;
-import javafx.scene.control.ComboBox;
 import javafx.scene.control.MenuButton;
 import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleGroup;
@@ -141,8 +138,8 @@ public class UserFilterController implements Controller<Node> {
     }
 
     Player player = optionalPlayer.get();
-
-    int globalRating = RatingUtil.getGlobalRating(player);
+    //TODO filter by specifc leaderboard rating
+    int globalRating = 0;
     int minRating;
     int maxRating;
 

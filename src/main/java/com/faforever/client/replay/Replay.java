@@ -3,6 +3,7 @@ package com.faforever.client.replay;
 import com.faforever.client.api.dto.Game;
 import com.faforever.client.api.dto.GamePlayerStats;
 import com.faforever.client.api.dto.GameReviewsSummary;
+import com.faforever.client.api.dto.LeaderboardRatingJournal;
 import com.faforever.client.api.dto.Validity;
 import com.faforever.client.game.Faction;
 import com.faforever.client.map.MapBean;
@@ -427,12 +428,17 @@ public class Replay {
     private final Faction faction;
 
     public static PlayerStats fromDto(GamePlayerStats gamePlayerStats) {
+      Optional<LeaderboardRatingJournal> ratingJournal = gamePlayerStats.getLeaderboardRatingJournals().stream().findFirst();
+      Double beforeMean = ratingJournal.map(LeaderboardRatingJournal::getMeanBefore).orElse(0.0);
+      Double beforeDeviation = ratingJournal.map(LeaderboardRatingJournal::getDeviationBefore).orElse(0.0);
+      Double afterMean = ratingJournal.map(LeaderboardRatingJournal::getMeanAfter).orElse(null);
+      Double afterDeviation = ratingJournal.map(LeaderboardRatingJournal::getDeviationAfter).orElse(null);
       return new PlayerStats(
-          Integer.valueOf(gamePlayerStats.getPlayer().getId()),
-          gamePlayerStats.getBeforeMean(),
-          gamePlayerStats.getBeforeDeviation(),
-          gamePlayerStats.getAfterMean() == null ? null : Double.valueOf(gamePlayerStats.getAfterMean()),
-          gamePlayerStats.getAfterDeviation() == null ? null : Double.valueOf(gamePlayerStats.getAfterDeviation()),
+          Integer.parseInt(gamePlayerStats.getPlayer().getId()),
+          beforeMean,
+          beforeDeviation,
+          afterMean,
+          afterDeviation,
           gamePlayerStats.getScore(),
           gamePlayerStats.getFaction()
       );

@@ -5,7 +5,6 @@ import com.faforever.client.api.dto.Event;
 import com.faforever.client.api.dto.Game;
 import com.faforever.client.api.dto.GamePlayerStats;
 import com.faforever.client.api.dto.GameReview;
-import com.faforever.client.api.dto.Ladder1v1LeaderboardEntry;
 import com.faforever.client.api.dto.MapVersion;
 import com.faforever.client.api.dto.MapVersionReview;
 import com.faforever.client.api.dto.ModVersionReview;
@@ -13,7 +12,6 @@ import com.faforever.client.api.dto.PlayerAchievement;
 import com.faforever.client.api.dto.PlayerEvent;
 import com.faforever.client.config.ClientProperties;
 import com.faforever.client.game.KnownFeaturedMod;
-import com.faforever.client.leaderboard.LeaderboardEntry;
 import com.faforever.client.mod.ModInfoBeanBuilder;
 import com.faforever.client.mod.ModVersion;
 import com.google.common.eventbus.EventBus;
@@ -40,7 +38,6 @@ import java.util.Map;
 import java.util.function.Supplier;
 
 import static java.util.Collections.emptyList;
-import static java.util.Collections.emptyMap;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
@@ -174,36 +171,6 @@ public class FafApiAccessorImplTest {
 
   @Test
   @SuppressWarnings("unchecked")
-  public void testGetLadder1v1Leaderboard() {
-    List<LeaderboardEntry> result = Arrays.asList(
-        Ladder1v1EntryBeanBuilder.create().defaultValues().username("user1").get(),
-        Ladder1v1EntryBeanBuilder.create().defaultValues().username("user2").get()
-    );
-
-    ArgumentCaptor<Map<String, ?>> captor = ArgumentCaptor.forClass(Map.class);
-    when(restOperations.getForObject(eq("/leaderboards/ladder1v1"), eq(List.class), captor.capture()))
-        .thenReturn(result)
-        .thenReturn(emptyList());
-
-    assertThat(instance.getLadder1v1Leaderboard(), equalTo(result));
-
-    Map<String, ?> params = captor.getValue();
-    assertThat(params.get("sort"), is("-rating"));
-    assertThat(params.get("include"), is("player"));
-    assertThat(params.get("fields[ladder1v1Rating]"), is("rating,numGames,winGames"));
-    assertThat(params.get("fields[player]"), is("login"));
-  }
-
-  @Test
-  public void testGetLadder1v1EntryForPlayer() {
-    Ladder1v1LeaderboardEntry entry = new Ladder1v1LeaderboardEntry();
-    when(restOperations.getForObject("/leaderboards/ladder1v1/123", Ladder1v1LeaderboardEntry.class, emptyMap())).thenReturn(entry);
-
-    assertThat(instance.getLadder1v1EntryForPlayer(123), equalTo(entry));
-  }
-
-  @Test
-  @SuppressWarnings("unchecked")
   public void testGetFafGamePlayerStats() {
     List<GamePlayerStats> gamePlayerStats = Collections.singletonList(new GamePlayerStats());
 
@@ -211,7 +178,7 @@ public class FafApiAccessorImplTest {
         .thenReturn(gamePlayerStats)
         .thenReturn(emptyList());
 
-    List<GamePlayerStats> result = instance.getGamePlayerStats(123, KnownFeaturedMod.FAF);
+    List<GamePlayerStats> result = instance.getRatingJournal(123, KnownFeaturedMod.FAF);
 
     assertThat(result, is(gamePlayerStats));
     verify(restOperations).getForObject("/data/gamePlayerStats" +
@@ -229,7 +196,7 @@ public class FafApiAccessorImplTest {
         .thenReturn(gamePlayerStats)
         .thenReturn(emptyList());
 
-    List<GamePlayerStats> result = instance.getGamePlayerStats(123, KnownFeaturedMod.LADDER_1V1);
+    List<GamePlayerStats> result = instance.getRatingJournal(123, KnownFeaturedMod.LADDER_1V1);
 
     assertThat(result, is(gamePlayerStats));
     verify(restOperations).getForObject("/data/gamePlayerStats" +

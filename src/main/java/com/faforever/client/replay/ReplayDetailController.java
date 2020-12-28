@@ -6,7 +6,7 @@ import com.faforever.client.fx.Controller;
 import com.faforever.client.fx.JavaFxUtil;
 import com.faforever.client.fx.StringCell;
 import com.faforever.client.game.Faction;
-import com.faforever.client.game.RatingType;
+import com.faforever.client.game.RatingPrecision;
 import com.faforever.client.game.TeamCardController;
 import com.faforever.client.i18n.I18n;
 import com.faforever.client.map.MapBean;
@@ -20,7 +20,6 @@ import com.faforever.client.replay.Replay.GameOption;
 import com.faforever.client.replay.Replay.PlayerStats;
 import com.faforever.client.theme.UiService;
 import com.faforever.client.util.ClipboardUtil;
-import com.faforever.client.util.Rating;
 import com.faforever.client.util.RatingUtil;
 import com.faforever.client.util.TimeService;
 import com.faforever.client.vault.review.Review;
@@ -319,16 +318,16 @@ public class ReplayDetailController implements Controller<Node> {
       TeamCardController controller = uiService.loadFxml("theme/team_card.fxml");
       teamCardControllers.add(controller);
 
-      Function<Player, Rating> playerRatingFunction = player -> {
+      Function<Player, Integer> playerRatingFunction = player -> {
         PlayerStats playerStats = statsByPlayerId.get(player.getId());
-        return new Rating(playerStats.getBeforeMean(), playerStats.getBeforeDeviation());
+        return RatingUtil.getRating(playerStats.getBeforeMean(), playerStats.getBeforeDeviation());
       };
 
       Function<Player, Faction> playerFactionFunction = player -> statsByPlayerId.get(player.getId()).getFaction();
 
       playerService.getPlayersByIds(playerIds)
           .thenAccept(players ->
-              controller.setPlayersInTeam(team, players, playerRatingFunction, playerFactionFunction, RatingType.EXACT)
+              controller.setPlayersInTeam(team, players, playerRatingFunction, playerFactionFunction, RatingPrecision.EXACT)
           );
 
       teamsContainer.getChildren().add(controller.getRoot());
