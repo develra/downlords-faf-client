@@ -54,12 +54,11 @@ public class JoinGameHelperTest extends AbstractPlainJavaFxTest {
   @Mock
   private EventBus eventBus;
 
-  private Player currentPlayer;
   private Game game;
 
   @Before
   public void setUp() throws Exception {
-    currentPlayer = PlayerBuilder.create("junit").defaultValues().get();
+    Player currentPlayer = PlayerBuilder.create("junit").defaultValues().get();
     game = GameBuilder.create().defaultValues()
         .minRating(0)
         .maxRating(1000)

@@ -30,7 +30,6 @@ import java.util.concurrent.CompletableFuture;
 @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 @Slf4j
 public class PrivateUserInfoController implements Controller<Node> {
-  private final CountryFlagService countryFlagService;
   private final I18n i18n;
   private final AchievementService achievementService;
   private final EventBus eventBus;
@@ -58,8 +57,7 @@ public class PrivateUserInfoController implements Controller<Node> {
   @SuppressWarnings("FieldCanBeLocal")
   private InvalidationListener gameInvalidationListener;
 
-  public PrivateUserInfoController(CountryFlagService countryFlagService, I18n i18n, AchievementService achievementService, EventBus eventBus, ChatUserService chatUserService) {
-    this.countryFlagService = countryFlagService;
+  public PrivateUserInfoController(I18n i18n, AchievementService achievementService, EventBus eventBus, ChatUserService chatUserService) {
     this.i18n = i18n;
     this.achievementService = achievementService;
     this.eventBus = eventBus;

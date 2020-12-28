@@ -26,7 +26,6 @@ import org.mockito.Mock;
 
 import java.time.OffsetDateTime;
 import java.time.temporal.ChronoUnit;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -87,7 +86,7 @@ public class UserInfoWindowControllerTest extends AbstractPlainJavaFxTest {
     when(playerService.getPlayersByIds(any())).thenReturn(CompletableFuture.completedFuture(Collections.emptyList()));
     when(leaderboardService.getLeaderboards()).thenReturn(CompletableFuture.completedFuture(List.of(leaderboard)));
     when(leaderboardService.getEntriesForPlayer(eq(PLAYER_ID))).thenReturn(CompletableFuture.completedFuture(List.of(new LeaderboardEntry())));
-    when(statisticsService.getRatingHistory(eq(PLAYER_ID), any())).thenReturn(CompletableFuture.completedFuture(Arrays.asList(
+    when(statisticsService.getRatingHistory(eq(PLAYER_ID), any())).thenReturn(CompletableFuture.completedFuture(asList(
         new RatingHistoryDataPoint(OffsetDateTime.now(), 1500f, 50f),
         new RatingHistoryDataPoint(OffsetDateTime.now().plus(1, ChronoUnit.DAYS), 1500f, 50f)
     )));

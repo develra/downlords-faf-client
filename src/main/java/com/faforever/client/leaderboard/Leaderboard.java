@@ -13,7 +13,6 @@ import java.util.Objects;
 
 @Value
 public class Leaderboard {
-
   IntegerProperty id;
   ObjectProperty<OffsetDateTime> createTime;
   ObjectProperty<OffsetDateTime> updateTime;
