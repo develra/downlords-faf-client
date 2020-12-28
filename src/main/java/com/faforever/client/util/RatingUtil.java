@@ -18,24 +18,26 @@ public final class RatingUtil {
     return (int) (ratingToBeRounded / 100) * 100;
   }
 
-  public static int getRoundedLeaderboardRating(Player player, String ratingType) {
-    return getRoundedRating(getLeaderboardRating(player, ratingType));
+  public static Integer getRoundedLeaderboardRating(Player player, String ratingType) {
+    Optional<Integer> exactRating = Optional.ofNullable(getLeaderboardRating(player, ratingType));
+    return exactRating.map(RatingUtil::getRoundedRating).orElse(null);
   }
 
-  public static int getRoundedLeaderboardRating(Player player, Leaderboard leaderboard) {
-    return getRoundedRating(getLeaderboardRating(player, leaderboard));
+  public static Integer getRoundedLeaderboardRating(Player player, Leaderboard leaderboard) {
+    Optional<Integer> exactRating = Optional.ofNullable(getLeaderboardRating(player, leaderboard));
+    return exactRating.map(RatingUtil::getRoundedRating).orElse(null);
   }
 
   public static int getRoundedRating(int rating) {
     return (rating + 50) / 100 * 100;
   }
 
-  public static int getLeaderboardRating(Player player, String ratingType) {
+  public static Integer getLeaderboardRating(Player player, String ratingType) {
     Optional<LeaderboardRating> leaderboardRating = Optional.ofNullable(player.getLeaderboardRatings().get(ratingType));
-    return leaderboardRating.map(RatingUtil::getRating).orElse(0);
+    return leaderboardRating.map(RatingUtil::getRating).orElse(null);
   }
 
-  public static int getLeaderboardRating(Player player, Leaderboard leaderboard) {
+  public static Integer getLeaderboardRating(Player player, Leaderboard leaderboard) {
     Optional<LeaderboardRating> leaderboardRating = Optional.ofNullable(player.getLeaderboardRatings().get(leaderboard.getTechnicalName()));
     return leaderboardRating.map(RatingUtil::getRating).orElse(0);
   }

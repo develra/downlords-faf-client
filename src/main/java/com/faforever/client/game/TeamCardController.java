@@ -71,11 +71,13 @@ public class TeamCardController implements Controller<Node> {
         continue;
       }
       PlayerCardTooltipController playerCardTooltipController = uiService.loadFxml("theme/player_card_tooltip.fxml");
-      int playerRating = ratingProvider.apply(player);
-      totalRating += playerRating;
+      Integer playerRating = ratingProvider.apply(player);
+      if (playerRating != null) {
+        totalRating += playerRating;
 
-      if (ratingPrecision == RatingPrecision.ROUNDED) {
-        playerRating = RatingUtil.getRoundedRating(playerRating);
+        if (ratingPrecision == RatingPrecision.ROUNDED) {
+          playerRating = RatingUtil.getRoundedRating(playerRating);
+        }
       }
       Faction faction = null;
       if (playerFactionProvider != null) {

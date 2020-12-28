@@ -420,8 +420,8 @@ public class Replay {
   @Data
   public static class PlayerStats {
     private final int playerId;
-    private final double beforeMean;
-    private final double beforeDeviation;
+    private final Double beforeMean;
+    private final Double beforeDeviation;
     private final Double afterMean;
     private final Double afterDeviation;
     private final int score;
@@ -429,8 +429,8 @@ public class Replay {
 
     public static PlayerStats fromDto(GamePlayerStats gamePlayerStats) {
       Optional<LeaderboardRatingJournal> ratingJournal = gamePlayerStats.getLeaderboardRatingJournals().stream().findFirst();
-      Double beforeMean = ratingJournal.map(LeaderboardRatingJournal::getMeanBefore).orElse(0.0);
-      Double beforeDeviation = ratingJournal.map(LeaderboardRatingJournal::getDeviationBefore).orElse(0.0);
+      Double beforeMean = ratingJournal.map(LeaderboardRatingJournal::getMeanBefore).orElse(null);
+      Double beforeDeviation = ratingJournal.map(LeaderboardRatingJournal::getDeviationBefore).orElse(null);
       Double afterMean = ratingJournal.map(LeaderboardRatingJournal::getMeanAfter).orElse(null);
       Double afterDeviation = ratingJournal.map(LeaderboardRatingJournal::getDeviationAfter).orElse(null);
       return new PlayerStats(
