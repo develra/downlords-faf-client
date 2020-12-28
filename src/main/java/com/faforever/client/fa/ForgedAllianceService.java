@@ -1,7 +1,7 @@
 package com.faforever.client.fa;
 
 import com.faforever.client.game.Faction;
-import com.faforever.client.player.LeaderboardRating;
+import com.faforever.client.leaderboard.LeaderboardRating;
 import com.faforever.client.player.Player;
 import com.faforever.client.preferences.PreferencesService;
 import lombok.RequiredArgsConstructor;

@@ -1,6 +1,7 @@
 package com.faforever.client.replay;
 
 import com.faforever.client.i18n.I18n;
+import com.faforever.client.leaderboard.LeaderboardService;
 import com.faforever.client.main.event.OpenOnlineReplayVaultEvent;
 import com.faforever.client.main.event.ShowReplayEvent;
 import com.faforever.client.mod.ModService;
@@ -29,6 +30,7 @@ import org.mockito.Mock;
 import org.testfx.util.WaitForAsyncUtils;
 
 import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
@@ -44,6 +46,8 @@ public class OnlineReplayVaultControllerTest extends AbstractPlainJavaFxTest {
 
   @Mock
   private ModService modService;
+  @Mock
+  private LeaderboardService leaderboardService;
   @Mock
   private ReplayService replayService;
   @Mock
@@ -79,7 +83,8 @@ public class OnlineReplayVaultControllerTest extends AbstractPlainJavaFxTest {
 
     when(uiService.loadFxml("theme/vault/replay/replay_detail.fxml")).thenAnswer(invocation -> replayDetailController);
 
-    when(modService.getFeaturedMods()).thenReturn(CompletableFuture.completedFuture(Collections.emptyList()));
+    when(modService.getFeaturedMods()).thenReturn(CompletableFuture.completedFuture(List.of()));
+    when(leaderboardService.getLeaderboards()).thenReturn(CompletableFuture.completedFuture(List.of()));
     when(replayService.getNewestReplaysWithPageCount(anyInt(), anyInt())).thenReturn(CompletableFuture.completedFuture(new Tuple<>(Collections.emptyList(), 0)));
     when(replayService.getHighestRatedReplaysWithPageCount(anyInt(), anyInt())).thenReturn(CompletableFuture.completedFuture(new Tuple<>(Collections.emptyList(), 0)));
     when(replayService.findById(anyInt())).thenReturn(CompletableFuture.completedFuture(Optional.of(testReplay)));
@@ -91,7 +96,7 @@ public class OnlineReplayVaultControllerTest extends AbstractPlainJavaFxTest {
     sortOrder = preferencesService.getPreferences().getVaultPrefs().getOnlineReplaySortConfig();
     standardSearchConfig = new SearchConfig(sortOrder, "query");
 
-    instance = new OnlineReplayVaultController(modService, replayService, uiService, notificationService, i18n, preferencesService, reportingService);
+    instance = new OnlineReplayVaultController(modService, leaderboardService, replayService, uiService, notificationService, i18n, preferencesService, reportingService);
 
     loadFxml("theme/vault/vault_entity.fxml", clazz -> {
       if (SearchController.class.isAssignableFrom(clazz)) {

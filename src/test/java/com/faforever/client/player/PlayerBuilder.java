@@ -2,6 +2,10 @@ package com.faforever.client.player;
 
 import com.faforever.client.chat.avatar.AvatarBean;
 import com.faforever.client.game.Game;
+import com.faforever.client.leaderboard.LeaderboardRating;
+import com.faforever.client.leaderboard.LeaderboardRatingBuilder;
+
+import java.util.Map;
 
 public class PlayerBuilder {
 
@@ -16,12 +20,13 @@ public class PlayerBuilder {
   }
 
   public PlayerBuilder defaultValues() {
-    return id(1)
-        .leaderboardRatingDeviation(250)
-        .leaderboardRatingMean(1500)
-        .socialStatus(SocialStatus.OTHER)
-        .clan("e")
-        .country("US");
+    id(1);
+    LeaderboardRating leaderboardRating = LeaderboardRatingBuilder.create().defaultValues().get();
+    leaderboardRatings(Map.of("global", leaderboardRating));
+    socialStatus(SocialStatus.OTHER);
+    clan("e");
+    country("US");
+    return this;
   }
 
   public PlayerBuilder clan(String clan) {
@@ -43,13 +48,8 @@ public class PlayerBuilder {
     return this;
   }
 
-  public PlayerBuilder leaderboardRatingMean(float mean) {
-    player.setLeaderboardRatingMean(mean);
-    return this;
-  }
-
-  public PlayerBuilder leaderboardRatingDeviation(float deviation) {
-    player.setLeaderboardRatingDeviation(deviation);
+  public PlayerBuilder leaderboardRatings(Map<String, LeaderboardRating> leaderboardRatingMap) {
+    player.setLeaderboardRatings(leaderboardRatingMap);
     return this;
   }
 

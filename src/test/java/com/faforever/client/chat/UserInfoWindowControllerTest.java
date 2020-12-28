@@ -7,9 +7,9 @@ import com.faforever.client.achievements.PlayerAchievementBuilder;
 import com.faforever.client.api.dto.AchievementState;
 import com.faforever.client.domain.RatingHistoryDataPoint;
 import com.faforever.client.events.EventService;
-import com.faforever.client.fa.RatingMode;
-import com.faforever.client.game.KnownFeaturedMod;
 import com.faforever.client.i18n.I18n;
+import com.faforever.client.leaderboard.Leaderboard;
+import com.faforever.client.leaderboard.LeaderboardBuilder;
 import com.faforever.client.leaderboard.LeaderboardEntry;
 import com.faforever.client.leaderboard.LeaderboardService;
 import com.faforever.client.notification.NotificationService;
@@ -29,6 +29,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 import static java.util.Arrays.asList;
@@ -72,16 +73,21 @@ public class UserInfoWindowControllerTest extends AbstractPlainJavaFxTest {
   @Mock
   private LeaderboardService leaderboardService;
 
+  private Leaderboard leaderboard;
+
   @Before
   public void setUp() throws Exception {
+    leaderboard = LeaderboardBuilder.create().defaultValues().get();
+
     instance = new UserInfoWindowController(statisticsService, countryFlagService, achievementService, eventService,
         i18n, uiService, timeService, playerService, notificationService, leaderboardService);
 
     when(uiService.loadFxml("theme/achievement_item.fxml")).thenReturn(achievementItemController);
     when(achievementItemController.getRoot()).thenReturn(new HBox());
     when(playerService.getPlayersByIds(any())).thenReturn(CompletableFuture.completedFuture(Collections.emptyList()));
-    when(leaderboardService.getEntryForPlayer(eq(PLAYER_ID))).thenReturn(CompletableFuture.completedFuture(new LeaderboardEntry()));
-    when(statisticsService.getRatingHistory(any(), eq(PLAYER_ID))).thenReturn(CompletableFuture.completedFuture(Arrays.asList(
+    when(leaderboardService.getLeaderboards()).thenReturn(CompletableFuture.completedFuture(List.of(leaderboard)));
+    when(leaderboardService.getEntriesForPlayer(eq(PLAYER_ID))).thenReturn(CompletableFuture.completedFuture(List.of(new LeaderboardEntry())));
+    when(statisticsService.getRatingHistory(eq(PLAYER_ID), any())).thenReturn(CompletableFuture.completedFuture(Arrays.asList(
         new RatingHistoryDataPoint(OffsetDateTime.now(), 1500f, 50f),
         new RatingHistoryDataPoint(OffsetDateTime.now().plus(1, ChronoUnit.DAYS), 1500f, 50f)
     )));
@@ -138,18 +144,10 @@ public class UserInfoWindowControllerTest extends AbstractPlainJavaFxTest {
   }
 
   @Test
-  public void testOnRatingTypeChangeGlobal() throws Exception {
+  public void testOnRatingTypeChange() throws Exception {
     testSetPlayerInfoBean();
-    instance.ratingTypeComboBox.setValue(RatingMode.GLOBAL);
+    instance.ratingTypeComboBox.setValue(leaderboard);
     instance.onRatingTypeChange();
-    verify(statisticsService, times(2)).getRatingHistory(KnownFeaturedMod.FAF, PLAYER_ID);
-  }
-
-  @Test
-  public void testOnRatingTypeChange1v1() throws Exception {
-    testSetPlayerInfoBean();
-    instance.ratingTypeComboBox.setValue(RatingMode.LADDER_1V1);
-    instance.onRatingTypeChange();
-    verify(statisticsService).getRatingHistory(KnownFeaturedMod.LADDER_1V1, PLAYER_ID);
+    verify(statisticsService, times(2)).getRatingHistory(PLAYER_ID, leaderboard);
   }
 }

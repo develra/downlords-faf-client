@@ -1,9 +1,11 @@
 package com.faforever.client.chat;
 
+import com.faforever.client.fa.RatingMode;
 import com.faforever.client.fx.Controller;
 import com.faforever.client.game.PlayerStatus;
 import com.faforever.client.i18n.I18n;
 import com.faforever.client.player.Player;
+import com.faforever.client.util.RatingUtil;
 import com.google.common.annotations.VisibleForTesting;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -137,9 +139,9 @@ public class UserFilterController implements Controller<Node> {
       return false;
     }
 
+    //TODO filter by specifc leaderboard rating remove hardcoded value
     Player player = optionalPlayer.get();
-    //TODO filter by specifc leaderboard rating
-    int globalRating = 0;
+    int rating = RatingUtil.getLeaderboardRating(player, RatingMode.GLOBAL.getRatingType());
     int minRating;
     int maxRating;
 
@@ -154,7 +156,7 @@ public class UserFilterController implements Controller<Node> {
       maxRating = Integer.MAX_VALUE;
     }
 
-    return globalRating >= minRating && globalRating <= maxRating;
+    return rating >= minRating && rating <= maxRating;
   }
 
   @VisibleForTesting

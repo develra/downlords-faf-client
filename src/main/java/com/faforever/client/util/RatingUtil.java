@@ -2,7 +2,7 @@ package com.faforever.client.util;
 
 import com.faforever.client.domain.RatingHistoryDataPoint;
 import com.faforever.client.leaderboard.Leaderboard;
-import com.faforever.client.player.LeaderboardRating;
+import com.faforever.client.leaderboard.LeaderboardRating;
 import com.faforever.client.player.Player;
 
 import java.util.Optional;

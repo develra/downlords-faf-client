@@ -235,7 +235,7 @@ public class ChatUserServiceTest extends AbstractPlainJavaFxTest {
 
   @Test
   public void testStatusToPlaying() {
-    Game game = GameBuilder.create().defaultValues().state(GameStatus.PLAYING).get();
+    Game game = GameBuilder.create().defaultValues().status(GameStatus.PLAYING).get();
     Player player = PlayerBuilder.create("junit").defaultValues().game(game).get();
     ChatChannelUser chatUser = ChatChannelUserBuilder.create("junit")
         .defaultValues()
@@ -252,7 +252,7 @@ public class ChatUserServiceTest extends AbstractPlainJavaFxTest {
 
   @Test
   public void testStatusToHosting() {
-    Game game = GameBuilder.create().defaultValues().state(GameStatus.OPEN).host("junit").get();
+    Game game = GameBuilder.create().defaultValues().status(GameStatus.OPEN).host("junit").get();
     Player player = PlayerBuilder.create("junit").defaultValues().game(game).get();
     ChatChannelUser chatUser = ChatChannelUserBuilder.create("junit")
         .defaultValues()
@@ -269,7 +269,7 @@ public class ChatUserServiceTest extends AbstractPlainJavaFxTest {
 
   @Test
   public void testStatusToLobbying() {
-    Game game = GameBuilder.create().defaultValues().state(GameStatus.OPEN).get();
+    Game game = GameBuilder.create().defaultValues().status(GameStatus.OPEN).get();
     Player player = PlayerBuilder.create("junit").defaultValues().game(game).get();
     ChatChannelUser chatUser = ChatChannelUserBuilder.create("junit")
         .defaultValues()

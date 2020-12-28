@@ -5,13 +5,14 @@ import com.faforever.client.api.dto.Event;
 import com.faforever.client.api.dto.Game;
 import com.faforever.client.api.dto.GamePlayerStats;
 import com.faforever.client.api.dto.GameReview;
+import com.faforever.client.api.dto.LeaderboardRatingJournal;
 import com.faforever.client.api.dto.MapVersion;
 import com.faforever.client.api.dto.MapVersionReview;
 import com.faforever.client.api.dto.ModVersionReview;
 import com.faforever.client.api.dto.PlayerAchievement;
 import com.faforever.client.api.dto.PlayerEvent;
 import com.faforever.client.config.ClientProperties;
-import com.faforever.client.game.KnownFeaturedMod;
+import com.faforever.client.fa.RatingMode;
 import com.faforever.client.mod.ModInfoBeanBuilder;
 import com.faforever.client.mod.ModVersion;
 import com.google.common.eventbus.EventBus;
@@ -178,13 +179,11 @@ public class FafApiAccessorImplTest {
         .thenReturn(gamePlayerStats)
         .thenReturn(emptyList());
 
-    List<GamePlayerStats> result = instance.getRatingJournal(123, KnownFeaturedMod.FAF);
+    List<LeaderboardRatingJournal> result = instance.getRatingJournal(123, RatingMode.GLOBAL.getRatingType());
 
     assertThat(result, is(gamePlayerStats));
-    verify(restOperations).getForObject("/data/gamePlayerStats" +
-        "?filter=player.id==\"123\";game.featuredMod.technicalName==\"faf\"" +
-        "&page[size]=10000" +
-        "&page[number]=1", List.class);
+    verify(restOperations).getForObject("/data/leaderboardRatingJournal?filter=gamePlayerStats.player.id==\"123\";" +
+        "leaderboard.technical_name==\"global\"&sort=createTime&page[size]=10000&page[number]=1", List.class);
   }
 
   @Test
@@ -196,13 +195,11 @@ public class FafApiAccessorImplTest {
         .thenReturn(gamePlayerStats)
         .thenReturn(emptyList());
 
-    List<GamePlayerStats> result = instance.getRatingJournal(123, KnownFeaturedMod.LADDER_1V1);
+    List<LeaderboardRatingJournal> result = instance.getRatingJournal(123, RatingMode.LADDER_1V1.getRatingType());
 
     assertThat(result, is(gamePlayerStats));
-    verify(restOperations).getForObject("/data/gamePlayerStats" +
-        "?filter=player.id==\"123\";game.featuredMod.technicalName==\"ladder1v1\"" +
-        "&page[size]=10000" +
-        "&page[number]=1", List.class);
+    verify(restOperations).getForObject("/data/leaderboardRatingJournal?filter=gamePlayerStats.player.id==\"123\";" +
+        "leaderboard.technical_name==\"ladder_1v1\"&sort=createTime&page[size]=10000&page[number]=1", List.class);
   }
 
   @Test

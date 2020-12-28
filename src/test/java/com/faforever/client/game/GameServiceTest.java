@@ -182,12 +182,12 @@ public class GameServiceTest extends AbstractPlainJavaFxTest {
   }
 
   private void mockGlobalStartGameProcess(int uid, String... additionalArgs) throws IOException {
-    mockStartGameProcess(uid, GLOBAL, null, false, additionalArgs);
+    mockStartGameProcess(uid, GLOBAL.getRatingType(), null, false, additionalArgs);
   }
 
-  private void mockStartGameProcess(int uid, RatingMode ratingMode, Faction faction, boolean rehost, String... additionalArgs) throws IOException {
+  private void mockStartGameProcess(int uid, String ratingType, Faction faction, boolean rehost, String... additionalArgs) throws IOException {
     when(forgedAllianceService.startGame(
-        uid, faction, asList(additionalArgs), ratingMode, GPG_PORT, LOCAL_REPLAY_PORT, rehost, junitPlayer)
+        uid, faction, asList(additionalArgs), ratingType, GPG_PORT, LOCAL_REPLAY_PORT, rehost, junitPlayer)
     ).thenReturn(process);
   }
 
@@ -224,9 +224,9 @@ public class GameServiceTest extends AbstractPlainJavaFxTest {
     assertThat(future.get(TIMEOUT, TIME_UNIT), is(nullValue()));
     verify(mapService, never()).download(any());
     verify(replayService).start(eq(game.getId()), any());
-    
+
     verify(forgedAllianceService).startGame(
-        gameLaunchMessage.getUid(), null, asList(), GLOBAL,
+        gameLaunchMessage.getUid(), null, asList(), GLOBAL.getRatingType(),
         GPG_PORT, LOCAL_REPLAY_PORT, false, junitPlayer);
   }
 
@@ -254,7 +254,7 @@ public class GameServiceTest extends AbstractPlainJavaFxTest {
 
     verify(replayService).start(eq(game.getId()), any());
     verify(forgedAllianceService).startGame(
-        gameLaunchMessage.getUid(), null, asList(), GLOBAL,
+        gameLaunchMessage.getUid(), null, asList(), GLOBAL.getRatingType(),
         GPG_PORT, LOCAL_REPLAY_PORT, false, junitPlayer);
     verify(forgedAllianceService).startReplay(replayPath, replayId);
   }
@@ -283,7 +283,7 @@ public class GameServiceTest extends AbstractPlainJavaFxTest {
 
     verify(replayService).start(eq(game.getId()), any());
     verify(forgedAllianceService).startGame(
-        gameLaunchMessage.getUid(), null, asList(), GLOBAL,
+        gameLaunchMessage.getUid(), null, asList(), GLOBAL.getRatingType(),
         GPG_PORT, LOCAL_REPLAY_PORT, false, junitPlayer);
     verify(forgedAllianceService, never()).startReplay(replayPath, replayId);
   }
@@ -339,7 +339,7 @@ public class GameServiceTest extends AbstractPlainJavaFxTest {
 
     gameTerminatedLatch.await(TIMEOUT, TIME_UNIT);
     verify(forgedAllianceService).startGame(
-        gameLaunchMessage.getUid(), null, asList("/foo", "bar", "/bar", "foo"), GLOBAL,
+        gameLaunchMessage.getUid(), null, asList("/foo", "bar", "/bar", "foo"), GLOBAL.getRatingType(),
         GPG_PORT, LOCAL_REPLAY_PORT, false, junitPlayer);
     verify(replayService).start(eq(gameLaunchMessage.getUid()), any());
   }
@@ -499,7 +499,7 @@ public class GameServiceTest extends AbstractPlainJavaFxTest {
     FeaturedMod featuredMod = FeaturedModBeanBuilder.create().defaultValues().get();
 
     String[] additionalArgs = {"/team", "1", "/players", "2", "/startspot", "4"};
-    mockStartGameProcess(uid, RatingMode.NONE, CYBRAN, false, additionalArgs);
+    mockStartGameProcess(uid, RatingMode.LADDER_1V1.getRatingType(), CYBRAN, false, additionalArgs);
     when(fafService.startSearchMatchmaker()).thenReturn(completedFuture(gameLaunchMessage));
     when(gameUpdater.update(featuredMod, null, Collections.emptyMap(), Collections.emptySet())).thenReturn(completedFuture(null));
     when(mapService.isInstalled(map)).thenReturn(false);
@@ -512,7 +512,7 @@ public class GameServiceTest extends AbstractPlainJavaFxTest {
     verify(mapService).download(map);
     verify(replayService).start(eq(uid), any());
     verify(forgedAllianceService).startGame(
-        uid, CYBRAN, asList(additionalArgs), RatingMode.NONE, GPG_PORT, LOCAL_REPLAY_PORT, false, junitPlayer);
+        uid, CYBRAN, asList(additionalArgs), RatingMode.LADDER_1V1.getRatingType(), GPG_PORT, LOCAL_REPLAY_PORT, false, junitPlayer);
   }
 
   @Test
@@ -573,7 +573,7 @@ public class GameServiceTest extends AbstractPlainJavaFxTest {
     Game game = GameBuilder.create().defaultValues().get();
     instance.currentGame.set(game);
 
-    mockStartGameProcess(game.getId(), GLOBAL, null, true);
+    mockStartGameProcess(game.getId(), GLOBAL.getRatingType(), null, true);
     when(modService.getFeaturedMod(game.getFeaturedMod())).thenReturn(completedFuture(FeaturedModBeanBuilder.create().defaultValues().get()));
     when(gameUpdater.update(any(), any(), any(), any())).thenReturn(completedFuture(null));
     when(fafService.requestHostGame(any())).thenReturn(completedFuture(GameLaunchMessageBuilder.create().defaultValues().get()));
@@ -582,7 +582,7 @@ public class GameServiceTest extends AbstractPlainJavaFxTest {
 
     instance.onRehostRequest(new RehostRequestEvent());
 
-    verify(forgedAllianceService).startGame(anyInt(), eq(null), anyList(), eq(GLOBAL), anyInt(), eq(LOCAL_REPLAY_PORT), eq(true), eq(junitPlayer));
+    verify(forgedAllianceService).startGame(anyInt(), eq(null), anyList(), eq(GLOBAL.getRatingType()), anyInt(), eq(LOCAL_REPLAY_PORT), eq(true), eq(junitPlayer));
   }
 
   @Test

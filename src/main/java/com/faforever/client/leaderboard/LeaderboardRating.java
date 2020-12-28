@@ -1,5 +1,6 @@
-package com.faforever.client.player;
+package com.faforever.client.leaderboard;
 
+import com.google.common.annotations.VisibleForTesting;
 import javafx.beans.property.FloatProperty;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleFloatProperty;
@@ -9,7 +10,7 @@ import java.util.Objects;
 import java.util.Optional;
 
 /**
- * Represents a player with username, clan, country, friend/foe flag and so on.
+ * Represents a leaderboard rating
  */
 public class LeaderboardRating {
 
@@ -17,7 +18,8 @@ public class LeaderboardRating {
   private final FloatProperty mean;
   private final IntegerProperty numberOfGames;
 
-  private LeaderboardRating() {
+  @VisibleForTesting
+  LeaderboardRating() {
     deviation = new SimpleFloatProperty();
     mean = new SimpleFloatProperty();
     numberOfGames = new SimpleIntegerProperty();

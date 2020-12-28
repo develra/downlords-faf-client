@@ -306,6 +306,10 @@ public class Game {
         && id.getValue().equals(((Game) obj).id.getValue());
   }
 
+  public void setVisibility(GameVisibility visibility) {
+    this.visibility.setValue(visibility);
+  }
+
   public GameVisibility getVisibility() {
     return visibility.get();
   }

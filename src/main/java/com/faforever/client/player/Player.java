@@ -3,6 +3,7 @@ package com.faforever.client.player;
 import com.faforever.client.chat.ChatChannelUser;
 import com.faforever.client.game.Game;
 import com.faforever.client.game.PlayerStatus;
+import com.faforever.client.leaderboard.LeaderboardRating;
 import com.faforever.client.remote.domain.GameStatus;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.IntegerProperty;

@@ -1,26 +1,21 @@
 package com.faforever.client.leaderboard;
 
-import com.faforever.client.game.KnownFeaturedMod;
 import com.faforever.client.i18n.I18n;
-import com.faforever.client.main.event.OpenLadder1v1LeaderboardEvent;
 import com.faforever.client.notification.NotificationService;
 import com.faforever.client.reporting.ReportingService;
 import com.faforever.client.test.AbstractPlainJavaFxTest;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
+import org.testfx.util.WaitForAsyncUtils;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.nullValue;
-import static org.hamcrest.Matchers.hasSize;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 public class LeaderboardsControllerTest extends AbstractPlainJavaFxTest {
@@ -36,72 +31,80 @@ public class LeaderboardsControllerTest extends AbstractPlainJavaFxTest {
   @Mock
   private I18n i18n;
 
+  private Leaderboard leaderboard;
+
   @Before
   public void setUp() throws Exception {
+    leaderboard = LeaderboardBuilder.create().defaultValues().get();
+
+    when(leaderboardService.getLeaderboards()).thenReturn(CompletableFuture.completedFuture(List.of(leaderboard)));
+
     instance = new LeaderboardsController(leaderboardService, notificationService, i18n, reportingService);
 
     loadFxml("theme/leaderboard/leaderboards.fxml", clazz -> instance);
   }
 
   @Test
-  public void testOnDisplay() throws Exception {
-    when(leaderboardService.getEntries(KnownFeaturedMod.LADDER_1V1)).thenReturn(CompletableFuture.completedFuture(Arrays.asList(
+  public void testOnDisplay() {
+    when(leaderboardService.getEntries(leaderboard)).thenReturn(CompletableFuture.completedFuture(Arrays.asList(
         new LeaderboardEntry(), new LeaderboardEntry()
     )));
 
-    CountDownLatch loadedLatch = new CountDownLatch(1);
-    instance.ratingTable.itemsProperty().addListener(observable -> loadedLatch.countDown());
-    instance.setRatingType(KnownFeaturedMod.LADDER_1V1);
+    instance.leaderboardComboBox.setValue(leaderboard);
+    instance.onLeaderboardSelected();
+    WaitForAsyncUtils.waitForFxEvents();
 
-    instance.display(new OpenLadder1v1LeaderboardEvent());
-
-    assertTrue(loadedLatch.await(3, TimeUnit.SECONDS));
-    verifyZeroInteractions(notificationService);
+    assertEquals(2, instance.ratingTable.getItems().size());
+    verifyNoInteractions(notificationService);
   }
 
   @Test
-  public void testFilterByNamePlayerExactMatch() throws Exception {
-    LeaderboardEntry entry1 = new LeaderboardEntry();
-    entry1.setUsername("Aa");
-    LeaderboardEntry entry2 = new LeaderboardEntry();
-    entry2.setUsername("Ab");
+  public void testFilterByNamePlayerExactMatch() {
+    LeaderboardEntry entry1 = LeaderboardEntryBuilder.create().defaultValues().username("Aa").get();
+    LeaderboardEntry entry2 = LeaderboardEntryBuilder.create().defaultValues().username("Ab").get();
 
-    when(leaderboardService.getEntries(KnownFeaturedMod.LADDER_1V1)).thenReturn(CompletableFuture.completedFuture(Arrays.asList(
+    when(leaderboardService.getEntries(leaderboard)).thenReturn(CompletableFuture.completedFuture(Arrays.asList(
         entry1, entry2
     )));
-    instance.setRatingType(KnownFeaturedMod.LADDER_1V1);
-    instance.display(new OpenLadder1v1LeaderboardEvent());
 
-    assertThat(instance.ratingTable.getSelectionModel().getSelectedItem(), nullValue());
+    instance.leaderboardComboBox.setValue(leaderboard);
+    instance.onLeaderboardSelected();
+    WaitForAsyncUtils.waitForFxEvents();
+
+    assertNull(instance.ratingTable.getSelectionModel().getSelectedItem());
 
     instance.searchTextField.setText("aa");
-    assertThat(instance.ratingTable.getItems(), hasSize(2));
-    assertThat(instance.ratingTable.getSelectionModel().getSelectedItem().getUsername(), is("Aa"));
+    WaitForAsyncUtils.waitForFxEvents();
+    assertEquals(2, instance.ratingTable.getItems().size());
+    assertEquals("Aa", instance.ratingTable.getSelectionModel().getSelectedItem().getUsername());
   }
 
   @Test
-  public void testFilterByNamePlayerPartialMatch() throws Exception {
+  public void testFilterByNamePlayerPartialMatch() {
     LeaderboardEntry entry1 = new LeaderboardEntry();
     entry1.setUsername("Aa");
     LeaderboardEntry entry2 = new LeaderboardEntry();
     entry2.setUsername("Ab");
 
-    when(leaderboardService.getEntries(KnownFeaturedMod.LADDER_1V1)).thenReturn(CompletableFuture.completedFuture(Arrays.asList(
+    when(leaderboardService.getEntries(leaderboard)).thenReturn(CompletableFuture.completedFuture(Arrays.asList(
         entry1, entry2
     )));
-    instance.setRatingType(KnownFeaturedMod.LADDER_1V1);
-    instance.display(new OpenLadder1v1LeaderboardEvent());
 
-    assertThat(instance.ratingTable.getSelectionModel().getSelectedItem(), nullValue());
+    instance.leaderboardComboBox.setValue(leaderboard);
+    instance.onLeaderboardSelected();
+    WaitForAsyncUtils.waitForFxEvents();
+
+    assertNull(instance.ratingTable.getSelectionModel().getSelectedItem());
 
     instance.searchTextField.setText("b");
-    assertThat(instance.ratingTable.getItems(), hasSize(2));
-    assertThat(instance.ratingTable.getSelectionModel().getSelectedItem().getUsername(), is("Ab"));
+    WaitForAsyncUtils.waitForFxEvents();
+    assertEquals(2, instance.ratingTable.getItems().size());
+    assertEquals("Ab", instance.ratingTable.getSelectionModel().getSelectedItem().getUsername());
   }
 
   @Test
   public void testGetRoot() throws Exception {
-    assertThat(instance.getRoot(), is(instance.leaderboardRoot));
-    assertThat(instance.getRoot().getParent(), is(nullValue()));
+    assertEquals(instance.getRoot(), instance.leaderboardRoot);
+    assertNull(instance.getRoot().getParent());
   }
 }
