@@ -494,6 +494,7 @@ public class GameServiceTest extends AbstractPlainJavaFxTest {
         .initMode(LobbyMode.AUTO_LOBBY)
         .mapPosition(4)
         .team(1)
+        .ratingType("ladder_1v1")
         .get();
 
     FeaturedMod featuredMod = FeaturedModBeanBuilder.create().defaultValues().get();

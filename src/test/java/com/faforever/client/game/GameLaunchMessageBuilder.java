@@ -55,6 +55,11 @@ public class GameLaunchMessageBuilder {
     return this;
   }
 
+  public GameLaunchMessageBuilder ratingType(String ratingType) {
+    gameLaunchMessage.setRatingType(ratingType);
+    return this;
+  }
+
   public GameLaunchMessageBuilder initMode(LobbyMode initMode) {
     gameLaunchMessage.setInitMode(initMode);
     return this;
