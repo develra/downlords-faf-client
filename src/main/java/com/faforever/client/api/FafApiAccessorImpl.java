@@ -41,6 +41,7 @@ import com.github.jasminb.jsonapi.JSONAPIDocument;
 import com.github.rutledgepaulv.qbuilders.builders.QBuilder;
 import com.github.rutledgepaulv.qbuilders.conditions.Condition;
 import com.github.rutledgepaulv.qbuilders.visitors.RSQLVisitor;
+import com.google.common.collect.ImmutableMap;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import lombok.RequiredArgsConstructor;
@@ -202,7 +203,7 @@ public class FafApiAccessorImpl implements FafApiAccessor, InitializingBean {
 
   @Override
   public List<LeaderboardEntry> getLeaderboardEntriesForPlayer(int playerId) {
-    return getAll(LEADERBOARD_ENTRY_ENDPOINT, ImmutableMap.of(
+    return getAll(LEADERBOARD_ENTRY_ENDPOINT, java.util.Map.of(
         FILTER, rsql(qBuilder().intNum("player.id").eq(playerId)),
         INCLUDE, LEADERBOARD_ENTRY_INCLUDES,
         SORT, "-rating"));
@@ -211,7 +212,7 @@ public class FafApiAccessorImpl implements FafApiAccessor, InitializingBean {
   @Override
   @Cacheable(value = CacheNames.LEADERBOARD, sync = true)
   public List<LeaderboardEntry> getAllLeaderboardEntries(String leaderboardTechnicalName) {
-    return getAll(LEADERBOARD_ENTRY_ENDPOINT, ImmutableMap.of(
+    return getAll(LEADERBOARD_ENTRY_ENDPOINT, java.util.Map.of(
         FILTER, rsql(qBuilder().string("leaderboard.technical_name").eq(leaderboardTechnicalName)
             .and().instant("updateTime").after(LocalDateTime.now().minusMonths(1).toInstant(ZoneOffset.UTC), false)),
         INCLUDE, LEADERBOARD_ENTRY_INCLUDES,

@@ -3,8 +3,8 @@ package com.faforever.client.api.dto;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.github.jasminb.jsonapi.annotations.Id;
 import com.github.jasminb.jsonapi.annotations.Type;
-import lombok.Data;
 import lombok.AllArgsConstructor;
+import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.OffsetDateTime;
@@ -18,7 +18,7 @@ public class Leaderboard {
   private String id;
   private OffsetDateTime createTime;
   private OffsetDateTime updateTime;
-  //TODO: Remove JsonProperty if api gets rid of snake_case
+  //TODO: #2083 Remove JsonProperty if api gets rid of snake_case
   @JsonProperty("description_key")
   private String descriptionKey;
   @JsonProperty("name_key")

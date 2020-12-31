@@ -142,14 +142,11 @@ public class GameService implements InitializingBean {
   private final DiscordRichPresenceService discordRichPresenceService;
   private final ReplayServer replayServer;
   private final ReconnectTimerService reconnectTimerService;
-
-  @VisibleForTesting
-  String ratingType;
-
   private final ObservableList<Game> games;
   private final String faWindowTitle;
   private final BooleanProperty inMatchmakerQueue;
-
+  @VisibleForTesting
+  String ratingType;
   private Process process;
   private boolean rehostRequested;
   private int localReplayPort;
@@ -316,8 +313,16 @@ public class GameService implements InitializingBean {
     return updateGameIfNecessary(newGameInfo.getFeaturedMod(), null, emptyMap(), newGameInfo.getSimMods())
         .thenCompose(aVoid -> downloadMapIfNecessary(newGameInfo.getMap()))
         .thenCompose(aVoid -> fafService.requestHostGame(newGameInfo))
-        //TODO: The rating type from the game launch message should be used when implemented on the server. Then rating mode should be removed
-        .thenAccept(gameLaunchMessage -> startGame(gameLaunchMessage, gameLaunchMessage.getFaction(), RatingMode.GLOBAL.getRatingType()));
+        .thenAccept(gameLaunchMessage -> {
+
+          String ratingType = gameLaunchMessage.getRatingType();
+          if (ratingType == null) {
+            log.warn("Rating type not in gameLaunchMessage using global rating type");
+            ratingType = RatingMode.GLOBAL.getRatingType();
+          }
+
+          startGame(gameLaunchMessage, gameLaunchMessage.getFaction(), ratingType);
+        });
   }
 
   private void addAlreadyInQueueNotification() {
@@ -368,7 +373,19 @@ public class GameService implements InitializingBean {
             game.setPassword(password);
             currentGame.set(game);
           }
-          startGame(gameLaunchMessage, null, game.getRatingType());
+
+          String ratingType = gameLaunchMessage.getRatingType();
+          if (ratingType == null) {
+            log.warn("Rating type not in gameLaunchMessage using game rating type");
+            ratingType = game.getRatingType();
+          }
+
+          if (ratingType == null) {
+            log.warn("Rating type not in game using global rating type");
+            ratingType = RatingMode.GLOBAL.getRatingType();
+          }
+
+          startGame(gameLaunchMessage, null, ratingType);
         })
         .exceptionally(throwable -> {
           log.warn("Game could not be joined", throwable);
@@ -543,7 +560,14 @@ public class GameService implements InitializingBean {
               gameLaunchMessage.getArgs().add("/players " + gameLaunchMessage.getExpectedPlayers());
               gameLaunchMessage.getArgs().add("/startspot " + gameLaunchMessage.getMapPosition());
 
-              startGame(gameLaunchMessage, gameLaunchMessage.getFaction(), RatingMode.GLOBAL.getRatingType()); // TODO: use leaderboard information from queue to display right rating
+              String ratingType = gameLaunchMessage.getRatingType();
+
+              if (ratingType == null) {
+                log.warn("Rating type not in game launch message using global");
+                ratingType = RatingMode.GLOBAL.getRatingType();
+              }
+
+              startGame(gameLaunchMessage, gameLaunchMessage.getFaction(), ratingType);
             }))
         .exceptionally(throwable -> {
           if (throwable.getCause() instanceof CancellationException) {
