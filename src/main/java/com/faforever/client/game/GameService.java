@@ -147,6 +147,8 @@ public class GameService implements InitializingBean {
   private final BooleanProperty inMatchmakerQueue;
   @VisibleForTesting
   String ratingType;
+  @VisibleForTesting
+  String matchedQueueRatingType;
   private Process process;
   private boolean rehostRequested;
   private int localReplayPort;
@@ -563,7 +565,12 @@ public class GameService implements InitializingBean {
               String ratingType = gameLaunchMessage.getRatingType();
 
               if (ratingType == null) {
-                log.warn("Rating type not in game launch message using global");
+                log.warn("Rating type not in game launch message using MatchedQueueRatingType");
+                ratingType = matchedQueueRatingType;
+              }
+
+              if (ratingType == null) {
+                log.warn("matchedQueueRatingType null using global");
                 ratingType = RatingMode.GLOBAL.getRatingType();
               }
 
@@ -904,6 +911,10 @@ public class GameService implements InitializingBean {
       log.info("ForgedAlliance still running, destroying process");
       process.destroy();
     }
+  }
+
+  public void setMatchedQueueRatingType(String matchedQueueRatingType) {
+    this.matchedQueueRatingType = matchedQueueRatingType;
   }
 
   @Subscribe
