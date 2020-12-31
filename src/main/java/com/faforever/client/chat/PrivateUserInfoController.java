@@ -8,8 +8,11 @@ import com.faforever.client.fx.JavaFxUtil;
 import com.faforever.client.game.Game;
 import com.faforever.client.game.GameDetailController;
 import com.faforever.client.i18n.I18n;
+import com.faforever.client.leaderboard.LeaderboardRating;
+import com.faforever.client.leaderboard.LeaderboardService;
 import com.faforever.client.player.Player;
 import com.faforever.client.util.IdenticonUtil;
+import com.faforever.client.util.RatingUtil;
 import com.google.common.eventbus.EventBus;
 import javafx.application.Platform;
 import javafx.beans.InvalidationListener;
@@ -32,34 +35,33 @@ import java.util.concurrent.CompletableFuture;
 public class PrivateUserInfoController implements Controller<Node> {
   private final I18n i18n;
   private final AchievementService achievementService;
+  private final LeaderboardService leaderboardService;
   private final EventBus eventBus;
   private final ChatUserService chatUserService;
-  private ChatChannelUser chatUser;
-
   public ImageView userImageView;
   public Label usernameLabel;
   public ImageView countryImageView;
   public Label countryLabel;
-  public Label globalRatingLabel;
-  public Label leaderboardRatingLabel;
+  public Label ratingsLabels;
+  public Label ratingsValues;
   public Label gamesPlayedLabel;
   public GameDetailController gameDetailController;
   public Pane gameDetailWrapper;
   public Label unlockedAchievementsLabel;
   public Node privateUserInfoRoot;
-  public Label globalRatingLabelLabel;
-  public Label leaderboardRatingLabelLabel;
   public Label gamesPlayedLabelLabel;
   public Label unlockedAchievementsLabelLabel;
-
+  private ChatChannelUser chatUser;
   @SuppressWarnings("FieldCanBeLocal")
   private InvalidationListener ratingInvalidationListener;
   @SuppressWarnings("FieldCanBeLocal")
   private InvalidationListener gameInvalidationListener;
 
-  public PrivateUserInfoController(I18n i18n, AchievementService achievementService, EventBus eventBus, ChatUserService chatUserService) {
+  public PrivateUserInfoController(I18n i18n, AchievementService achievementService, LeaderboardService leaderboardService,
+                                   EventBus eventBus, ChatUserService chatUserService) {
     this.i18n = i18n;
     this.achievementService = achievementService;
+    this.leaderboardService = leaderboardService;
     this.eventBus = eventBus;
     this.chatUserService = chatUserService;
   }
@@ -75,10 +77,8 @@ public class PrivateUserInfoController implements Controller<Node> {
         countryLabel,
         gamesPlayedLabel,
         unlockedAchievementsLabel,
-        globalRatingLabel,
-        leaderboardRatingLabel,
-        globalRatingLabelLabel,
-        leaderboardRatingLabelLabel,
+        ratingsLabels,
+        ratingsValues,
         gamesPlayedLabelLabel,
         unlockedAchievementsLabelLabel
     );
@@ -112,10 +112,8 @@ public class PrivateUserInfoController implements Controller<Node> {
   private void setPlayerInfoVisible(boolean visible) {
     userImageView.setVisible(visible);
     countryLabel.setVisible(visible);
-    globalRatingLabel.setVisible(visible);
-    globalRatingLabelLabel.setVisible(visible);
-    leaderboardRatingLabel.setVisible(visible);
-    leaderboardRatingLabelLabel.setVisible(visible);
+    ratingsLabels.setVisible(visible);
+    ratingsValues.setVisible(visible);
     gamesPlayedLabel.setVisible(visible);
     gamesPlayedLabelLabel.setVisible(visible);
     unlockedAchievementsLabel.setVisible(visible);
@@ -131,6 +129,7 @@ public class PrivateUserInfoController implements Controller<Node> {
 
     ratingInvalidationListener = (observable) -> loadReceiverRatingInformation(player);
     JavaFxUtil.addListener(player.leaderboardRatingMapProperty(), new WeakInvalidationListener(ratingInvalidationListener));
+    loadReceiverRatingInformation(player);
 
     gameInvalidationListener = observable -> onPlayerGameChanged(player.getGame());
     JavaFxUtil.addListener(player.gameProperty(), new WeakInvalidationListener(gameInvalidationListener));
@@ -168,7 +167,22 @@ public class PrivateUserInfoController implements Controller<Node> {
   }
 
   private void loadReceiverRatingInformation(Player player) {
-    //TODO load rating information
+    leaderboardService.getLeaderboards().thenAccept(leaderboards -> {
+      StringBuilder ratingNames = new StringBuilder();
+      StringBuilder ratingNumbers = new StringBuilder();
+      leaderboards.forEach(leaderboard -> {
+        LeaderboardRating leaderboardRating = player.getLeaderboardRatings().get(leaderboard.getTechnicalName());
+        if (leaderboardRating != null) {
+          String leaderboardName = i18n.getWithDefault(leaderboard.getTechnicalName(), leaderboard.getNameKey());
+          ratingNames.append(i18n.get("leaderboard.rating", leaderboardName)).append("\n\n");
+          ratingNumbers.append(i18n.number(RatingUtil.getLeaderboardRating(player, leaderboard))).append("\n\n");
+        }
+      });
+      JavaFxUtil.runLater(() -> {
+        ratingsLabels.setText(ratingNames.toString());
+        ratingsValues.setText(ratingNumbers.toString());
+      });
+    });
   }
 }
 

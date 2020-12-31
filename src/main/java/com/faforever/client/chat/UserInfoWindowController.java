@@ -10,9 +10,11 @@ import com.faforever.client.api.dto.PlayerEvent;
 import com.faforever.client.domain.RatingHistoryDataPoint;
 import com.faforever.client.events.EventService;
 import com.faforever.client.fx.Controller;
+import com.faforever.client.fx.JavaFxUtil;
 import com.faforever.client.fx.OffsetDateTimeCell;
 import com.faforever.client.i18n.I18n;
 import com.faforever.client.leaderboard.Leaderboard;
+import com.faforever.client.leaderboard.LeaderboardRating;
 import com.faforever.client.leaderboard.LeaderboardService;
 import com.faforever.client.notification.NotificationService;
 import com.faforever.client.player.NameRecord;
@@ -41,9 +43,9 @@ import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Region;
-import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.Window;
@@ -62,7 +64,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
@@ -107,8 +108,10 @@ public class UserInfoWindowController implements Controller<Node> {
   public PieChart techBuiltChart;
   public PieChart unitsBuiltChart;
   public StackedBarChart factionsChart;
-  public VBox gamesPlayedBox;
-  public VBox ratingsBox;
+  public Label gamesPlayedLabel;
+  public HBox ratingsBox;
+  public Label ratingsLabels;
+  public Label ratingsValues;
   public Pane unlockedAchievementsHeader;
   public Pane lockedAchievementsHeader;
   public ScrollPane achievementsPane;
@@ -205,9 +208,10 @@ public class UserInfoWindowController implements Controller<Node> {
 
     usernameLabel.setText(player.getUsername());
     countryFlagService.loadCountryFlag(player.getCountry()).ifPresent(image -> countryImageView.setImage(image));
+    gamesPlayedLabel.setText(i18n.number(player.getNumberOfGames()));
 
     updateNameHistory();
-    updateRatingBoxes();
+    updateRatingGrids();
     countryLabel.setText(i18n.getCountryNameLocalized(player.getCountry()));
 
     onRatingTypeChange();
@@ -227,24 +231,23 @@ public class UserInfoWindowController implements Controller<Node> {
         });
   }
 
-  private void updateRatingBoxes() {
-    gamesPlayedBox.getChildren().clear();
-    ratingsBox.getChildren().clear();
-    leaderboardService.getLeaderboards().thenAccept(leaderboards ->
-        player.getLeaderboardRatings().forEach((key, value) -> {
-          Optional<Leaderboard> leaderboard = leaderboards.stream().filter(board -> board.getTechnicalName().equals(key)).findFirst();
-          leaderboard.ifPresent(board -> {
-            Platform.runLater(() -> {
-              String leaderboardName = i18n.getWithDefault(board.getTechnicalName(), board.getNameKey());
-              Label gamesPlayedLabel = new Label(i18n.get("leaderboard.gamesPlayed", leaderboardName, value.getNumberOfGames()));
-              gamesPlayedLabel.getStyleClass().add("h2");
-              gamesPlayedBox.getChildren().add(gamesPlayedLabel);
-              Label ratingLabel = new Label(i18n.get("leaderboard.rating", leaderboardName, RatingUtil.getRating(value.getMean(), value.getDeviation())));
-              ratingLabel.getStyleClass().add("h2");
-              ratingsBox.getChildren().add(ratingLabel);
-            });
-          });
-        }));
+  private void updateRatingGrids() {
+    leaderboardService.getLeaderboards().thenAccept(leaderboards -> {
+      StringBuilder ratingNames = new StringBuilder();
+      StringBuilder ratingNumbers = new StringBuilder();
+      leaderboards.forEach(leaderboard -> {
+        LeaderboardRating leaderboardRating = player.getLeaderboardRatings().get(leaderboard.getTechnicalName());
+        if (leaderboardRating != null) {
+          String leaderboardName = i18n.getWithDefault(leaderboard.getTechnicalName(), leaderboard.getNameKey());
+          ratingNames.append(i18n.get("leaderboard.rating", leaderboardName)).append("\n");
+          ratingNumbers.append(i18n.number(RatingUtil.getLeaderboardRating(player, leaderboard))).append("\n");
+        }
+      });
+      JavaFxUtil.runLater(() -> {
+        ratingsLabels.setText(ratingNames.toString());
+        ratingsValues.setText(ratingNumbers.toString());
+      });
+    });
   }
 
   private void updateNameHistory() {
@@ -391,8 +394,9 @@ public class UserInfoWindowController implements Controller<Node> {
   }
 
   public void onRatingTypeChange() {
-    CompletableFuture<Void> statisticsFuture = loadStatistics(ratingTypeComboBox.getValue());
-    statisticsFuture.thenRun(() -> Platform.runLater(this::plotPlayerRatingGraph));
+    if (ratingTypeComboBox.getValue() != null) {
+      loadStatistics(ratingTypeComboBox.getValue()).thenRun(() -> Platform.runLater(this::plotPlayerRatingGraph));
+    }
   }
 
   private CompletableFuture<Void> loadStatistics(Leaderboard leaderboard) {
