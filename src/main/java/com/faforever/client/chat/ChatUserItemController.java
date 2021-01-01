@@ -73,8 +73,6 @@ public class ChatUserItemController implements Controller<Node> {
   protected Tooltip countryTooltip;
   @VisibleForTesting
   protected Tooltip avatarTooltip;
-  @VisibleForTesting
-  protected Tooltip userTooltip;
   private GameTooltipController gameInfoController;
   private ChatChannelUser chatUser;
   private ChatChannelUser oldChatUser;
@@ -127,9 +125,6 @@ public class ChatUserItemController implements Controller<Node> {
   }
 
   private void initializeTooltips() {
-    userTooltip = new Tooltip();
-    usernameLabel.setTooltip(userTooltip);
-
     avatarTooltip = new Tooltip();
     avatarTooltip.setAnchorLocation(PopupWindow.AnchorLocation.CONTENT_TOP_LEFT);
     Tooltip.install(avatarImageView, avatarTooltip);
@@ -266,18 +261,9 @@ public class ChatUserItemController implements Controller<Node> {
     }
   }
 
-  private void updateNameLabelText(Player player) {
-    userTooltip.setText(String.format("%s",
-        i18n.get("userInfo.idleTimeFormat", timeService.timeAgo(chatUser.getLastActive()))));
-  }
-
   public void setVisible(boolean visible) {
     chatUserItemRoot.setVisible(visible);
     chatUserItemRoot.setManaged(visible);
-  }
-
-  public void onMouseEnteredUserNameLabel() {
-    chatUser.getPlayer().ifPresent(this::updateNameLabelText);
   }
 
   /**
