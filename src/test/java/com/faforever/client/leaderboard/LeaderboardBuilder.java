@@ -15,7 +15,7 @@ public class LeaderboardBuilder {
     updateTime(OffsetDateTime.MAX);
     descriptionKey("test_description");
     nameKey("test_name");
-    technicalName("test_leaderboard");
+    technicalName("global");
     return this;
   }
 

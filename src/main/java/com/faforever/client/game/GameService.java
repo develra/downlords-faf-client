@@ -107,7 +107,8 @@ import static java.util.concurrent.CompletableFuture.failedFuture;
 @RequiredArgsConstructor
 public class GameService implements InitializingBean {
 
-  private static final String DEFAULT_RATING_TYPE = "global";
+  @VisibleForTesting
+  static final String DEFAULT_RATING_TYPE = "global";
   private static final Pattern GAME_PREFS_ALLOW_MULTI_LAUNCH_PATTERN = Pattern.compile("debug\\s*=(\\s)*[{][^}]*enable_debug_facilities\\s*=\\s*true");
   private static final String GAME_PREFS_ALLOW_MULTI_LAUNCH_STRING = "\ndebug = {\n" +
       "    enable_debug_facilities = true\n" +
@@ -145,8 +146,6 @@ public class GameService implements InitializingBean {
   private final ObservableList<Game> games;
   private final String faWindowTitle;
   private final BooleanProperty inMatchmakerQueue;
-  @VisibleForTesting
-  String ratingType;
   @VisibleForTesting
   String matchedQueueRatingType;
   private Process process;
@@ -312,7 +311,7 @@ public class GameService implements InitializingBean {
       return completedFuture(null);
     }
 
-    return updateGameIfNecessary(newGameInfo.getFeaturedMod(), null, emptyMap(), newGameInfo.getSimMods())
+    return updateGameIfNecessary(newGameInfo.getFeaturedMod(), null, Map.of(), newGameInfo.getSimMods())
         .thenCompose(aVoid -> downloadMapIfNecessary(newGameInfo.getMap()))
         .thenCompose(aVoid -> fafService.requestHostGame(newGameInfo))
         .thenAccept(gameLaunchMessage -> {
@@ -432,7 +431,6 @@ public class GameService implements InitializingBean {
             }
             this.process = processForReplay;
             setGameRunning(true);
-            this.ratingType = "";
             spawnTerminationListener(this.process);
           } catch (IOException e) {
             notifyCantPlayReplay(replayId, e);
@@ -512,7 +510,6 @@ public class GameService implements InitializingBean {
           }
           this.process = processCreated;
           setGameRunning(true);
-          this.ratingType = "";
           spawnTerminationListener(this.process);
         }))
         .exceptionally(throwable -> {
@@ -652,7 +649,6 @@ public class GameService implements InitializingBean {
               adapterPort, localReplayPort, rehostRequested, getCurrentPlayer()));
           setGameRunning(true);
 
-          this.ratingType = ratingType;
           spawnTerminationListener(process);
         })
         .exceptionally(throwable -> {
@@ -829,24 +825,6 @@ public class GameService implements InitializingBean {
       }
     }
     return game;
-  }
-
-  public int parseRating(String string) {
-    try {
-      return Integer.parseInt(string);
-    } catch (NumberFormatException e) {
-      int rating;
-      String[] split = string.replace("k", "").split("\\.");
-      try {
-        rating = Integer.parseInt(split[0]) * 1000;
-        if (split.length == 2) {
-          rating += Integer.parseInt(split[1]) * 100;
-        }
-        return rating;
-      } catch (NumberFormatException e1) {
-        return Integer.MAX_VALUE;
-      }
-    }
   }
 
   private double calcAverageRating(GameInfoMessage gameInfoMessage) {
