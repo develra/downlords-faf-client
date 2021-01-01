@@ -6,19 +6,19 @@ import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
-import lombok.Value;
+import lombok.Data;
 
 import java.time.OffsetDateTime;
 import java.util.Objects;
 
-@Value
+@Data
 public class Leaderboard {
-  IntegerProperty id;
-  ObjectProperty<OffsetDateTime> createTime;
-  ObjectProperty<OffsetDateTime> updateTime;
-  StringProperty descriptionKey;
-  StringProperty nameKey;
-  StringProperty technicalName;
+  private final IntegerProperty id;
+  private final ObjectProperty<OffsetDateTime> createTime;
+  private final ObjectProperty<OffsetDateTime> updateTime;
+  private final StringProperty descriptionKey;
+  private final StringProperty nameKey;
+  private final StringProperty technicalName;
 
   public Leaderboard() {
     id = new SimpleIntegerProperty();

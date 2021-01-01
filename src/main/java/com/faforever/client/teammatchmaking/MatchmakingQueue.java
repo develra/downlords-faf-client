@@ -115,7 +115,7 @@ public class MatchmakingQueue {
     this.leaderboard.set(leaderboard);
   }
 
-  public ObjectProperty<Leaderboard> LeaderboardProperty() {
+  public ObjectProperty<Leaderboard> leaderboardProperty() {
     return leaderboard;
   }
 

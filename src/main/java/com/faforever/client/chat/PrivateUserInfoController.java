@@ -52,10 +52,6 @@ public class PrivateUserInfoController implements Controller<Node> {
   public Label gamesPlayedLabelLabel;
   public Label unlockedAchievementsLabelLabel;
   private ChatChannelUser chatUser;
-  @SuppressWarnings("FieldCanBeLocal")
-  private InvalidationListener ratingInvalidationListener;
-  @SuppressWarnings("FieldCanBeLocal")
-  private InvalidationListener gameInvalidationListener;
 
   public PrivateUserInfoController(I18n i18n, AchievementService achievementService, LeaderboardService leaderboardService,
                                    EventBus eventBus, ChatUserService chatUserService) {
@@ -125,11 +121,11 @@ public class PrivateUserInfoController implements Controller<Node> {
     userImageView.setImage(IdenticonUtil.createIdenticon(player.getId()));
     userImageView.setVisible(true);
 
-    ratingInvalidationListener = (observable) -> loadReceiverRatingInformation(player);
+    InvalidationListener ratingInvalidationListener = (observable) -> loadReceiverRatingInformation(player);
     JavaFxUtil.addListener(player.leaderboardRatingMapProperty(), new WeakInvalidationListener(ratingInvalidationListener));
     loadReceiverRatingInformation(player);
 
-    gameInvalidationListener = observable -> onPlayerGameChanged(player.getGame());
+    InvalidationListener gameInvalidationListener = observable -> onPlayerGameChanged(player.getGame());
     JavaFxUtil.addListener(player.gameProperty(), new WeakInvalidationListener(gameInvalidationListener));
     onPlayerGameChanged(player.getGame());
 

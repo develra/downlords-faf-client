@@ -675,9 +675,9 @@ public class GameServiceTest extends AbstractPlainJavaFxTest {
     when(preferencesService.isGamePathValid()).thenReturn(true);
     NewGameInfo newGameInfo = NewGameInfoBuilder.create().defaultValues().get();
     GameLaunchMessage gameLaunchMessage = GameLaunchMessageBuilder.create().defaultValues().get();
-    when(gameUpdater.update(newGameInfo.getFeaturedMod(), null, Map.of(), newGameInfo.getSimMods())).thenReturn(CompletableFuture.completedFuture(null));
+    when(gameUpdater.update(newGameInfo.getFeaturedMod(), null, Map.of(), newGameInfo.getSimMods())).thenReturn(completedFuture(null));
     when(mapService.download(newGameInfo.getMap())).thenReturn(completedFuture(null));
-    when(fafService.requestHostGame(newGameInfo)).thenReturn(CompletableFuture.completedFuture(gameLaunchMessage));
+    when(fafService.requestHostGame(newGameInfo)).thenReturn(completedFuture(gameLaunchMessage));
     instance.hostGame(newGameInfo);
     verify(forgedAllianceService).startGame(
         gameLaunchMessage.getUid(), null, List.of(), gameLaunchMessage.getRatingType(),
@@ -689,9 +689,9 @@ public class GameServiceTest extends AbstractPlainJavaFxTest {
     when(preferencesService.isGamePathValid()).thenReturn(true);
     NewGameInfo newGameInfo = NewGameInfoBuilder.create().defaultValues().get();
     GameLaunchMessage gameLaunchMessage = GameLaunchMessageBuilder.create().defaultValues().ratingType(null).get();
-    when(gameUpdater.update(newGameInfo.getFeaturedMod(), null, Map.of(), newGameInfo.getSimMods())).thenReturn(CompletableFuture.completedFuture(null));
+    when(gameUpdater.update(newGameInfo.getFeaturedMod(), null, Map.of(), newGameInfo.getSimMods())).thenReturn(completedFuture(null));
     when(mapService.download(newGameInfo.getMap())).thenReturn(completedFuture(null));
-    when(fafService.requestHostGame(newGameInfo)).thenReturn(CompletableFuture.completedFuture(gameLaunchMessage));
+    when(fafService.requestHostGame(newGameInfo)).thenReturn(completedFuture(gameLaunchMessage));
     instance.hostGame(newGameInfo);
     verify(forgedAllianceService).startGame(
         gameLaunchMessage.getUid(), null, List.of(), GameService.DEFAULT_RATING_TYPE,
@@ -716,11 +716,11 @@ public class GameServiceTest extends AbstractPlainJavaFxTest {
   public void startSearchMatchmaker() throws IOException {
     when(preferencesService.isGamePathValid()).thenReturn(true);
     when(modService.getFeaturedMod(FAF.getTechnicalName()))
-        .thenReturn(CompletableFuture.completedFuture(FeaturedModBeanBuilder.create().defaultValues().get()));
+        .thenReturn(completedFuture(FeaturedModBeanBuilder.create().defaultValues().get()));
     GameLaunchMessage gameLaunchMessage = GameLaunchMessageBuilder.create().defaultValues().get();
     when(gameUpdater.update(any(), any(), any(), any())).thenReturn(completedFuture(null));
     when(mapService.download(gameLaunchMessage.getMapname())).thenReturn(completedFuture(null));
-    when(fafService.startSearchMatchmaker()).thenReturn(CompletableFuture.completedFuture(gameLaunchMessage));
+    when(fafService.startSearchMatchmaker()).thenReturn(completedFuture(gameLaunchMessage));
     instance.startSearchMatchmaker();
     verify(forgedAllianceService).startGame(
         gameLaunchMessage.getUid(), null, List.of("/team", "null", "/players", "null", "/startspot", "null"),
@@ -731,11 +731,11 @@ public class GameServiceTest extends AbstractPlainJavaFxTest {
   public void startSearchMatchmakerNoLaunchRatingType() throws IOException {
     when(preferencesService.isGamePathValid()).thenReturn(true);
     when(modService.getFeaturedMod(FAF.getTechnicalName()))
-        .thenReturn(CompletableFuture.completedFuture(FeaturedModBeanBuilder.create().defaultValues().get()));
+        .thenReturn(completedFuture(FeaturedModBeanBuilder.create().defaultValues().get()));
     GameLaunchMessage gameLaunchMessage = GameLaunchMessageBuilder.create().defaultValues().ratingType(null).get();
     when(gameUpdater.update(any(), any(), any(), any())).thenReturn(completedFuture(null));
     when(mapService.download(gameLaunchMessage.getMapname())).thenReturn(completedFuture(null));
-    when(fafService.startSearchMatchmaker()).thenReturn(CompletableFuture.completedFuture(gameLaunchMessage));
+    when(fafService.startSearchMatchmaker()).thenReturn(completedFuture(gameLaunchMessage));
     instance.setMatchedQueueRatingType("ladder_1v1");
     instance.startSearchMatchmaker();
     verify(forgedAllianceService).startGame(
@@ -747,11 +747,11 @@ public class GameServiceTest extends AbstractPlainJavaFxTest {
   public void startSearchMatchmakerNoLaunchRatingTypeNoQueueRatingType() throws IOException {
     when(preferencesService.isGamePathValid()).thenReturn(true);
     when(modService.getFeaturedMod(FAF.getTechnicalName()))
-        .thenReturn(CompletableFuture.completedFuture(FeaturedModBeanBuilder.create().defaultValues().get()));
+        .thenReturn(completedFuture(FeaturedModBeanBuilder.create().defaultValues().get()));
     GameLaunchMessage gameLaunchMessage = GameLaunchMessageBuilder.create().defaultValues().ratingType(null).get();
     when(gameUpdater.update(any(), any(), any(), any())).thenReturn(completedFuture(null));
     when(mapService.download(gameLaunchMessage.getMapname())).thenReturn(completedFuture(null));
-    when(fafService.startSearchMatchmaker()).thenReturn(CompletableFuture.completedFuture(gameLaunchMessage));
+    when(fafService.startSearchMatchmaker()).thenReturn(completedFuture(gameLaunchMessage));
     instance.setMatchedQueueRatingType(null);
     instance.startSearchMatchmaker();
     verify(forgedAllianceService).startGame(
