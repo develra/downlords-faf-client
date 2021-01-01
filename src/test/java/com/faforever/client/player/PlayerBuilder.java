@@ -3,7 +3,7 @@ package com.faforever.client.player;
 import com.faforever.client.chat.avatar.AvatarBean;
 import com.faforever.client.game.Game;
 import com.faforever.client.leaderboard.LeaderboardRating;
-import com.faforever.client.leaderboard.LeaderboardRatingBuilder;
+import com.faforever.client.leaderboard.LeaderboardRatingMapBuilder;
 
 import java.util.Map;
 
@@ -21,8 +21,7 @@ public class PlayerBuilder {
 
   public PlayerBuilder defaultValues() {
     id(1);
-    LeaderboardRating leaderboardRating = LeaderboardRatingBuilder.create().defaultValues().get();
-    leaderboardRatings(Map.of("global", leaderboardRating));
+    leaderboardRatings(LeaderboardRatingMapBuilder.create().defaultValues().get());
     socialStatus(SocialStatus.OTHER);
     clan("e");
     country("US");

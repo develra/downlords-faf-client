@@ -92,8 +92,6 @@ public class PrivateUserInfoController implements Controller<Node> {
       this.chatUser.playerProperty().addListener((observable, oldValue, newValue) -> {
         if (newValue != null) {
           displayPlayerInfo(newValue);
-        } else {
-          displayChatUserInfo();
         }
       });
       displayChatUserInfo();
