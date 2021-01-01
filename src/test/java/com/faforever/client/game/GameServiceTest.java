@@ -3,7 +3,6 @@ package com.faforever.client.game;
 import com.faforever.client.config.ClientProperties;
 import com.faforever.client.discord.DiscordRichPresenceService;
 import com.faforever.client.fa.ForgedAllianceService;
-import com.faforever.client.fa.RatingMode;
 import com.faforever.client.fa.relay.LobbyMode;
 import com.faforever.client.fa.relay.event.RehostRequestEvent;
 import com.faforever.client.fa.relay.ice.IceAdapter;
@@ -58,7 +57,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
-import static com.faforever.client.fa.RatingMode.GLOBAL;
 import static com.faforever.client.game.Faction.CYBRAN;
 import static com.faforever.client.game.KnownFeaturedMod.FAF;
 import static com.faforever.client.remote.domain.GameStatus.CLOSED;
@@ -96,6 +94,8 @@ public class GameServiceTest extends AbstractPlainJavaFxTest {
   private static final TimeUnit TIME_UNIT = TimeUnit.MILLISECONDS;
   private static final Integer GPG_PORT = 1234;
   private static final int LOCAL_REPLAY_PORT = 15111;
+  private static final String GLOBAL_RATING_TYPE = "global";
+  private static final String LADDER_1v1_RATING_TYPE = "ladder_1v1";
 
   private GameService instance;
 
@@ -182,7 +182,7 @@ public class GameServiceTest extends AbstractPlainJavaFxTest {
   }
 
   private void mockGlobalStartGameProcess(int uid, String... additionalArgs) throws IOException {
-    mockStartGameProcess(uid, GLOBAL.getRatingType(), null, false, additionalArgs);
+    mockStartGameProcess(uid, GLOBAL_RATING_TYPE, null, false, additionalArgs);
   }
 
   private void mockStartGameProcess(int uid, String ratingType, Faction faction, boolean rehost, String... additionalArgs) throws IOException {
@@ -226,7 +226,7 @@ public class GameServiceTest extends AbstractPlainJavaFxTest {
     verify(replayService).start(eq(game.getId()), any());
 
     verify(forgedAllianceService).startGame(
-        gameLaunchMessage.getUid(), null, asList(), GLOBAL.getRatingType(),
+        gameLaunchMessage.getUid(), null, asList(), GLOBAL_RATING_TYPE,
         GPG_PORT, LOCAL_REPLAY_PORT, false, junitPlayer);
   }
 
@@ -254,7 +254,7 @@ public class GameServiceTest extends AbstractPlainJavaFxTest {
 
     verify(replayService).start(eq(game.getId()), any());
     verify(forgedAllianceService).startGame(
-        gameLaunchMessage.getUid(), null, asList(), GLOBAL.getRatingType(),
+        gameLaunchMessage.getUid(), null, asList(), GLOBAL_RATING_TYPE,
         GPG_PORT, LOCAL_REPLAY_PORT, false, junitPlayer);
     verify(forgedAllianceService).startReplay(replayPath, replayId);
   }
@@ -283,7 +283,7 @@ public class GameServiceTest extends AbstractPlainJavaFxTest {
 
     verify(replayService).start(eq(game.getId()), any());
     verify(forgedAllianceService).startGame(
-        gameLaunchMessage.getUid(), null, asList(), GLOBAL.getRatingType(),
+        gameLaunchMessage.getUid(), null, asList(), GLOBAL_RATING_TYPE,
         GPG_PORT, LOCAL_REPLAY_PORT, false, junitPlayer);
     verify(forgedAllianceService, never()).startReplay(replayPath, replayId);
   }
@@ -339,7 +339,7 @@ public class GameServiceTest extends AbstractPlainJavaFxTest {
 
     gameTerminatedLatch.await(TIMEOUT, TIME_UNIT);
     verify(forgedAllianceService).startGame(
-        gameLaunchMessage.getUid(), null, asList("/foo", "bar", "/bar", "foo"), GLOBAL.getRatingType(),
+        gameLaunchMessage.getUid(), null, asList("/foo", "bar", "/bar", "foo"), GLOBAL_RATING_TYPE,
         GPG_PORT, LOCAL_REPLAY_PORT, false, junitPlayer);
     verify(replayService).start(eq(gameLaunchMessage.getUid()), any());
   }
@@ -494,13 +494,13 @@ public class GameServiceTest extends AbstractPlainJavaFxTest {
         .initMode(LobbyMode.AUTO_LOBBY)
         .mapPosition(4)
         .team(1)
-        .ratingType("ladder_1v1")
+        .ratingType(LADDER_1v1_RATING_TYPE)
         .get();
 
     FeaturedMod featuredMod = FeaturedModBeanBuilder.create().defaultValues().get();
 
     String[] additionalArgs = {"/team", "1", "/players", "2", "/startspot", "4"};
-    mockStartGameProcess(uid, RatingMode.LADDER_1V1.getRatingType(), CYBRAN, false, additionalArgs);
+    mockStartGameProcess(uid, LADDER_1v1_RATING_TYPE, CYBRAN, false, additionalArgs);
     when(fafService.startSearchMatchmaker()).thenReturn(completedFuture(gameLaunchMessage));
     when(gameUpdater.update(featuredMod, null, Collections.emptyMap(), Collections.emptySet())).thenReturn(completedFuture(null));
     when(mapService.isInstalled(map)).thenReturn(false);
@@ -513,7 +513,7 @@ public class GameServiceTest extends AbstractPlainJavaFxTest {
     verify(mapService).download(map);
     verify(replayService).start(eq(uid), any());
     verify(forgedAllianceService).startGame(
-        uid, CYBRAN, asList(additionalArgs), RatingMode.LADDER_1V1.getRatingType(), GPG_PORT, LOCAL_REPLAY_PORT, false, junitPlayer);
+        uid, CYBRAN, asList(additionalArgs), LADDER_1v1_RATING_TYPE, GPG_PORT, LOCAL_REPLAY_PORT, false, junitPlayer);
   }
 
   @Test
@@ -574,7 +574,7 @@ public class GameServiceTest extends AbstractPlainJavaFxTest {
     Game game = GameBuilder.create().defaultValues().get();
     instance.currentGame.set(game);
 
-    mockStartGameProcess(game.getId(), GLOBAL.getRatingType(), null, true);
+    mockStartGameProcess(game.getId(), GLOBAL_RATING_TYPE, null, true);
     when(modService.getFeaturedMod(game.getFeaturedMod())).thenReturn(completedFuture(FeaturedModBeanBuilder.create().defaultValues().get()));
     when(gameUpdater.update(any(), any(), any(), any())).thenReturn(completedFuture(null));
     when(fafService.requestHostGame(any())).thenReturn(completedFuture(GameLaunchMessageBuilder.create().defaultValues().get()));
@@ -583,7 +583,7 @@ public class GameServiceTest extends AbstractPlainJavaFxTest {
 
     instance.onRehostRequest(new RehostRequestEvent());
 
-    verify(forgedAllianceService).startGame(anyInt(), eq(null), anyList(), eq(GLOBAL.getRatingType()), anyInt(), eq(LOCAL_REPLAY_PORT), eq(true), eq(junitPlayer));
+    verify(forgedAllianceService).startGame(anyInt(), eq(null), anyList(), eq(GLOBAL_RATING_TYPE), anyInt(), eq(LOCAL_REPLAY_PORT), eq(true), eq(junitPlayer));
   }
 
   @Test

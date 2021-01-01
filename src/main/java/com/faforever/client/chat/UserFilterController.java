@@ -1,6 +1,5 @@
 package com.faforever.client.chat;
 
-import com.faforever.client.fa.RatingMode;
 import com.faforever.client.fx.Controller;
 import com.faforever.client.game.PlayerStatus;
 import com.faforever.client.i18n.I18n;
@@ -141,7 +140,7 @@ public class UserFilterController implements Controller<Node> {
 
     //TODO filter by specifc leaderboard rating remove hardcoded value
     Player player = optionalPlayer.get();
-    int rating = RatingUtil.getLeaderboardRating(player, RatingMode.GLOBAL.getRatingType());
+    int rating = RatingUtil.getLeaderboardRating(player, "global");
     int minRating;
     int maxRating;
 

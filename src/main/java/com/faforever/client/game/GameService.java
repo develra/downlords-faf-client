@@ -4,7 +4,6 @@ import com.faforever.client.config.ClientProperties;
 import com.faforever.client.discord.DiscordRichPresenceService;
 import com.faforever.client.fa.CloseGameEvent;
 import com.faforever.client.fa.ForgedAllianceService;
-import com.faforever.client.fa.RatingMode;
 import com.faforever.client.fa.relay.event.RehostRequestEvent;
 import com.faforever.client.fa.relay.ice.IceAdapter;
 import com.faforever.client.fx.JavaFxUtil;
@@ -108,6 +107,7 @@ import static java.util.concurrent.CompletableFuture.failedFuture;
 @RequiredArgsConstructor
 public class GameService implements InitializingBean {
 
+  private static final String DEFAULT_RATING_TYPE = "global";
   private static final Pattern GAME_PREFS_ALLOW_MULTI_LAUNCH_PATTERN = Pattern.compile("debug\\s*=(\\s)*[{][^}]*enable_debug_facilities\\s*=\\s*true");
   private static final String GAME_PREFS_ALLOW_MULTI_LAUNCH_STRING = "\ndebug = {\n" +
       "    enable_debug_facilities = true\n" +
@@ -319,8 +319,8 @@ public class GameService implements InitializingBean {
 
           String ratingType = gameLaunchMessage.getRatingType();
           if (ratingType == null) {
-            log.warn("Rating type not in gameLaunchMessage using global rating type");
-            ratingType = RatingMode.GLOBAL.getRatingType();
+            log.warn("Rating type not in gameLaunchMessage using default");
+            ratingType = DEFAULT_RATING_TYPE;
           }
 
           startGame(gameLaunchMessage, gameLaunchMessage.getFaction(), ratingType);
@@ -383,8 +383,8 @@ public class GameService implements InitializingBean {
           }
 
           if (ratingType == null) {
-            log.warn("Rating type not in game using global rating type");
-            ratingType = RatingMode.GLOBAL.getRatingType();
+            log.warn("Rating type not in game using default");
+            ratingType = DEFAULT_RATING_TYPE;
           }
 
           startGame(gameLaunchMessage, null, ratingType);
@@ -570,8 +570,8 @@ public class GameService implements InitializingBean {
               }
 
               if (ratingType == null) {
-                log.warn("matchedQueueRatingType null using global");
-                ratingType = RatingMode.GLOBAL.getRatingType();
+                log.warn("matchedQueueRatingType null using default");
+                ratingType = DEFAULT_RATING_TYPE;
               }
 
               startGame(gameLaunchMessage, gameLaunchMessage.getFaction(), ratingType);

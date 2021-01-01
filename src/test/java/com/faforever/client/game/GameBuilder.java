@@ -1,6 +1,5 @@
 package com.faforever.client.game;
 
-import com.faforever.client.fa.RatingMode;
 import com.faforever.client.remote.domain.GameStatus;
 import com.faforever.client.remote.domain.GameType;
 import com.faforever.client.remote.domain.VictoryCondition;
@@ -34,7 +33,7 @@ public class GameBuilder {
     maxRating(1300);
     startTime(Instant.now());
     gameType(GameType.CUSTOM);
-    ratingType(RatingMode.GLOBAL.getRatingType());
+    ratingType("global");
     return this;
   }
 

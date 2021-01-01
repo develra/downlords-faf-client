@@ -4,13 +4,10 @@ import ch.micheljung.fxwindow.FxStage;
 import com.faforever.client.chat.ChatController;
 import com.faforever.client.config.ClientProperties;
 import com.faforever.client.discord.JoinDiscordEvent;
-import com.faforever.client.fa.RatingMode;
 import com.faforever.client.fx.PlatformService;
 import com.faforever.client.game.GamePathHandler;
 import com.faforever.client.game.GameService;
 import com.faforever.client.i18n.I18n;
-import com.faforever.client.leaderboard.LeaderboardRating;
-import com.faforever.client.leaderboard.LeaderboardRatingMapBuilder;
 import com.faforever.client.login.LoginController;
 import com.faforever.client.main.event.NavigateEvent;
 import com.faforever.client.main.event.NavigationItem;
@@ -53,9 +50,6 @@ import org.testfx.util.WaitForAsyncUtils;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Map;
-import java.util.Optional;
-import java.util.function.Consumer;
 
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.core.Is.is;

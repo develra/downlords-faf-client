@@ -12,7 +12,6 @@ import com.faforever.client.api.dto.ModVersionReview;
 import com.faforever.client.api.dto.PlayerAchievement;
 import com.faforever.client.api.dto.PlayerEvent;
 import com.faforever.client.config.ClientProperties;
-import com.faforever.client.fa.RatingMode;
 import com.faforever.client.mod.ModInfoBeanBuilder;
 import com.faforever.client.mod.ModVersion;
 import com.google.common.eventbus.EventBus;
@@ -171,31 +170,14 @@ public class FafApiAccessorImplTest {
   }
 
   @Test
-  @SuppressWarnings("unchecked")
-  public void testGetFafGamePlayerStats() {
+  public void testGetRatingHistory() {
     List<GamePlayerStats> gamePlayerStats = Collections.singletonList(new GamePlayerStats());
 
     when(restOperations.getForObject(anyString(), eq(List.class)))
         .thenReturn(gamePlayerStats)
         .thenReturn(emptyList());
 
-    List<LeaderboardRatingJournal> result = instance.getRatingJournal(123, RatingMode.GLOBAL.getRatingType());
-
-    assertThat(result, is(gamePlayerStats));
-    verify(restOperations).getForObject("/data/leaderboardRatingJournal?filter=gamePlayerStats.player.id==\"123\";" +
-        "leaderboard.technical_name==\"global\"&sort=createTime&page[size]=10000&page[number]=1", List.class);
-  }
-
-  @Test
-  @SuppressWarnings("unchecked")
-  public void testGetRatingHistory1v1() {
-    List<GamePlayerStats> gamePlayerStats = Collections.singletonList(new GamePlayerStats());
-
-    when(restOperations.getForObject(anyString(), eq(List.class)))
-        .thenReturn(gamePlayerStats)
-        .thenReturn(emptyList());
-
-    List<LeaderboardRatingJournal> result = instance.getRatingJournal(123, RatingMode.LADDER_1V1.getRatingType());
+    List<LeaderboardRatingJournal> result = instance.getRatingJournal(123, "ladder_1v1");
 
     assertThat(result, is(gamePlayerStats));
     verify(restOperations).getForObject("/data/leaderboardRatingJournal?filter=gamePlayerStats.player.id==\"123\";" +
